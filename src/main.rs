@@ -44,16 +44,14 @@ fn test_colors(background: i8) {
 
         // Test Foreground
         if background == 0 {
-            change_color!(vga_buffer::Color::from_u32(i),
-                vga_buffer::Color::Black);
+            change_fg!(vga_buffer::Color::from_u32(i));
 
             println!("Foreground Color Test!");
             continue;
         }
 
         // Test Background
-        change_color!(vga_buffer::Color::White,
-            vga_buffer::Color::from_u32(i));
+        change_bg!(vga_buffer::Color::from_u32(i));
 
        println!("Background Color Test! (Ignore the weird bugs)");   
     }
@@ -79,12 +77,13 @@ fn _start_tests() {
 pub extern "C" fn _start() -> ! {
     print!("Welcome to ");
     // delay!(500);
-    change_color!(vga_buffer::Color::LightBlue, vga_buffer::Color::Black);
+    change_fg!(vga_buffer::Color::LightBlue);
     print!("Mid");
-    change_color!(vga_buffer::Color::LightRed, vga_buffer::Color::Black);
+    change_fg!(vga_buffer::Color::LightRed);
     print!("As");
-    change_color!(vga_buffer::Color::Yellow, vga_buffer::Color::Black);
+    change_fg!(vga_buffer::Color::Yellow);
     println!("OS");
+    change_fg!(vga_buffer::Color::White);
 
     #[cfg(test)]
     test_main();

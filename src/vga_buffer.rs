@@ -79,6 +79,8 @@ pub struct Writer {
     column_position: usize,
     color_code: ColorCode,
     buffer: &'static mut Buffer,
+    bg_color: Color,
+    fg_color: Color,
 }
 
 impl Writer {
@@ -105,6 +107,16 @@ impl Writer {
 
     pub fn change_color(&mut self, foreground: Color, background: Color) {
         self.color_code = ColorCode::new(foreground, background);
+        self.bg_color = background;
+        self.fg_color = foreground;
+    }
+
+    pub fn change_foreground(&mut self, foreground: Color) {
+        self.change_color(foreground, self.bg_color);
+    }
+
+    pub fn change_background(&mut self, background: Color) {
+        self.change_color(self.fg_color, background);
     }
 
     fn new_line(&mut self) {
@@ -151,6 +163,8 @@ impl fmt::Write for Writer {
 lazy_static! {
     pub static ref WRITER: Mutex<Writer>  = Mutex::new(Writer {
         column_position: 0,
+        fg_color: Color::White,
+        bg_color: Color::Black,
         color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     });
@@ -176,14 +190,14 @@ macro_rules! println {
     ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)))
 }
 
-// Function to print a set of arguments with FMT
+// Function to print a set of fmt arguments
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     WRITER.lock().write_fmt(args).unwrap();
 }
 
-// Macro to change color
+// Macro to change foreground/background color
 #[macro_export]
 macro_rules! change_color {
     // Get foreground/background as expression-values and parse into vga_buffer::_change_color(...)
@@ -192,11 +206,37 @@ macro_rules! change_color {
     }
 }
 
+// Macro to change foreground color
+#[macro_export]
+macro_rules! change_fg {
+    ($foreground:expr)=>{
+        $crate::vga_buffer::_change_fg($foreground);
+    }
+}
+
+// Macro to change background color
+#[macro_export]
+macro_rules! change_bg {
+    ($background:expr)=>{
+        $crate::vga_buffer::_change_bg($background);
+    }
+}
+
 // Function for change_color!(...)
 #[doc(hidden)]
 pub fn _change_color(foreground: Color, background: Color) {
     // Go into static WRITER, lock it and change the color
     WRITER.lock().change_color(foreground, background);
+}
+
+// Function for change_fg!(...)
+pub fn _change_fg(foreground: Color) {
+    WRITER.lock().change_foreground(foreground);
+}
+
+// Function for change_bg!(...)
+pub fn _change_bg(background: Color) {
+    WRITER.lock().change_background(background);
 }
 
 // Tests
