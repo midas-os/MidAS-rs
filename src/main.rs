@@ -46,36 +46,6 @@ pub fn test_runner(tests: &[&dyn Testable]) {
     qemu::exit_qemu(qemu::QemuExitCode::Success);
 }
 
-<<<<<<< HEAD
-=======
-fn test_colors(background: i8) {
-    serial_println!("Running colors tests with mode {}", background);
-    
-    for i in 0..16 {
-
-    /****************************************
-     * Test Foreground                      
-     ****************************************/
-        if background == 0 {
-            change_fg!(vga_buffer::Color::from_u32(i));
-
-            println!("Foreground Color Test!");
-            continue;
-        }
-
-     /****************************************
-     * Test Background                      
-     ****************************************/
-        change_bg!(vga_buffer::Color::from_u32(i));
-
-       println!("Background Color Test! (Ignore the weird bugs)");   
-    }
-
-    change_color!(vga_buffer::Color::White, vga_buffer::Color::Black);
-    println!("");
-}
-
->>>>>>> d30e5590acc222bed472dd51b62cba42e6884d11
 fn _start_tests() {
     serial_print!("trivial assertion...");
     assert_eq!(1, 1);
