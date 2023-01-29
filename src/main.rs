@@ -75,19 +75,36 @@ fn _start_tests() {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    let usr = "MidasOS_Admin";
+    print!("Hey, ");
+    change_fg!(vga_buffer::Color::LightGreen);
+    print!("{}", usr);
+    change_fg!(vga_buffer::Color::White);
+    println!(".");
+    
     print!("Welcome to ");
     // delay!(500);
     change_fg!(vga_buffer::Color::LightBlue);
     print!("Mid");
     change_fg!(vga_buffer::Color::LightRed);
-    print!("As");
+    print!("as");
     change_fg!(vga_buffer::Color::Yellow);
     println!("OS");
     change_fg!(vga_buffer::Color::White);
 
     #[cfg(test)]
     test_main();
-    
+
+    // command line fake
+    change_fg!(vga_buffer::Color::LightGreen);
+    print!("{}", usr);
+    change_fg!(vga_buffer::Color::White);
+    print!("@");
+    change_fg!(vga_buffer::Color::LightRed);
+    print!("qemu");
+    change_fg!(vga_buffer::Color::White);
+    print!("> ");
+       
     // Infinite loop so the OS doesn't shut down after like 5ms
     loop {}
 }
