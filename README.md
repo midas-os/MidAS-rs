@@ -1,4 +1,4 @@
-# MAverROS
+# MidAS
 ## Rust in OS Development
 
 # How to run
