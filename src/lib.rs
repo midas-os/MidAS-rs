@@ -4,10 +4,13 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+#![feature(abi_x86_interrupt)]
 
 mod qemu;
 mod serial;
+mod vga_buffer;
 
+pub mod interrupts;
 
 use core::panic::PanicInfo;
 
@@ -40,6 +43,10 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("Error: {}\n", info);
     qemu::exit_qemu(qemu::QemuExitCode::Failed);
     loop {}
+}
+
+pub fn init() {
+    interrupts::init_idt();
 }
 
 // Entry point for "cargo test"

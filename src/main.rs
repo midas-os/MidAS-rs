@@ -9,9 +9,10 @@ mod qemu;
 mod serial;
 
 use core::panic::PanicInfo;
-use midas_os;
+use midas;
 
-static OS_NAME: &str = "Midas";
+static OS_NAME: &str = "MidAS";
+static OS_NAME_FULL: &str = "Midna Avery System";
 
 pub trait Testable {
     fn run(&self) -> ();
@@ -37,45 +38,19 @@ pub fn test_runner(tests: &[&dyn Testable]) {
     qemu::exit_qemu(qemu::QemuExitCode::Success);
 }
 
-fn test_colors(background: i8) {
-    serial_println!("Running colors tests with mode {}", background);
-    
-    for i in 0..16 {
-
-        // Test Foreground
-        if background == 0 {
-            change_fg!(vga_buffer::Color::from_u32(i));
-
-            println!("Foreground Color Test!");
-            continue;
-        }
-
-        // Test Background
-        change_bg!(vga_buffer::Color::from_u32(i));
-
-       println!("Background Color Test! (Ignore the weird bugs)");   
-    }
-
-    change_color!(vga_buffer::Color::White, vga_buffer::Color::Black);
-    println!("");
-}
-
 fn _start_tests() {
     serial_print!("trivial assertion...");
     assert_eq!(1, 1);
     serial_println!("[ok]");
-
-    serial_print!("Testing colors:\n\n");
-    test_colors(0);
-    serial_println!("-----------");
-    test_colors(1);
 
     qemu::exit_qemu(qemu::QemuExitCode::Success);
 }
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    let usr = "MidasOS_Admin";
+    midas::init();
+    
+    let usr = "Admin";
     print!("Hey, ");
     change_fg!(vga_buffer::Color::LightGreen);
     print!("{}", usr);
@@ -87,11 +62,13 @@ pub extern "C" fn _start() -> ! {
     change_fg!(vga_buffer::Color::LightBlue);
     print!("Mid");
     change_fg!(vga_buffer::Color::LightRed);
-    print!("as");
+    print!("A");
     change_fg!(vga_buffer::Color::Yellow);
-    println!("OS");
+    println!("S");
     change_fg!(vga_buffer::Color::White);
 
+    x86_64::instructions::interrupts::int3();
+    
     #[cfg(test)]
     test_main();
 
