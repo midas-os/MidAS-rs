@@ -1,12 +1,14 @@
 /**************************************************************************************************
 * Name :								Midna Style (MidSt)										         
 * Authors :						   			   Midna
-* Date :							         1/29/2023
+* Date :									 1/29/2023
 * Purpose :  To explain my personal coding format, particularly with my odd headers and comments 
 						       used due to my aesthetic preferences
 * Version :										1.0
 **************************************************************************************************/
 
+*	Tabs should be used when applicable for spacing, and they should be set to 4 spaces for 
+proper rendering.
 *	Beginning with the header, it should have buffer lines that are 99 characters long, with 98 
 *'s  and 1 / at the beginning top and at the ending bottom, in order to denote it as a multiple 
 line comment. In some programming languages that is not an option and any substitute characters 
@@ -14,8 +16,8 @@ are acceptable, like using 99 #'s on both sides in python.
 *	The header should always contain the name of the file, the Author(s), the date last edited, 
 a description as to the files purpose, and a version number to track the file. These should all
 have left aligned denotations and then have the text with the actual information centered after.
-Text that is centered should be centered in relation to the total characters 99, not in relation to
-the white space after the denotation.
+Text that is centered should be centered in relation to the total characters 99, not in relation
+to the white space after the denotation.
 *	The header also denotes the longest line that should appear within the code, at 99 characters
 long, after 99 characters it is recommended that you break the line into many.
 
@@ -31,3 +33,26 @@ requiring multiple lines simply being given a new line and a tab.
 start of the comment within the comment block and a space afterwards!
 *	Comments should be one level of indentation lower than what they are commenting on, when
 possible, to help the comments stand out more.
+
+/***************************************
+* Acronyms are my favored way to name 
+	things, and while i like to make 
+	them start with Mid, that is 
+	because my name is Midna and i do 
+	not recommend you do the same
+* This is the most subjective part of 
+	this style guide, the rest works 
+	without it
+***************************************/
+*	When creating an acronym, try to make it spell something out and look and sound unique. make
+the first letter of each word capitalized and follow along the word, making subsequent letters
+lowercase until another word is included.
+*	Acronyms should be personalized, let them reflect a sillier light on things! not everything
+has to be professional and a good acronym is memorable.
+
+/***************************************
+* {} are called braces! I called them
+	curvy brackets for far too long
+***************************************/
+*	opening braces should be placed at the start of the line whiched called them, and closing
+braces should get their own line.
