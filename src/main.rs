@@ -1,3 +1,11 @@
+/**************************************************************************************************
+* Name : 									   main.rs
+* Author : 										Avery
+* Date : 									  1/28/2023
+* Purpose : 					   Driver for operating system code
+* Version : 									 0.1
+**************************************************************************************************/
+
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
@@ -42,7 +50,9 @@ fn test_colors(background: i8) {
     
     for i in 0..16 {
 
-        // Test Foreground
+    /****************************************
+     * Test Foreground                      
+     ****************************************/
         if background == 0 {
             change_fg!(vga_buffer::Color::from_u32(i));
 
@@ -50,7 +60,9 @@ fn test_colors(background: i8) {
             continue;
         }
 
-        // Test Background
+     /****************************************
+     * Test Background                      
+     ****************************************/
         change_bg!(vga_buffer::Color::from_u32(i));
 
        println!("Background Color Test! (Ignore the weird bugs)");   
@@ -95,7 +107,9 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    // command line fake
+/****************************************
+* Command line without any input handling                      
+****************************************/
     change_fg!(vga_buffer::Color::LightGreen);
     print!("{}", usr);
     change_fg!(vga_buffer::Color::White);
@@ -105,11 +119,17 @@ pub extern "C" fn _start() -> ! {
     change_fg!(vga_buffer::Color::White);
     print!("> ");
        
-    // Infinite loop so the OS doesn't shut down after like 5ms
+ /****************************************
+ * Infinite loop, to keep the operating
+ 	system from stopping after 5ms
+ ****************************************/
     loop {}
 }
 
-// This function is called whenever the system panics.
+/****************************************
+ * Funtion called whenever the operating
+ 	system panics
+****************************************/
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
