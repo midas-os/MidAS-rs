@@ -26,6 +26,30 @@ pub enum Color {
     White = 15,
 }
 
+impl Color {
+    pub fn from_u32(value: u32) -> Color {
+        match value {
+            0 => Color::Black,
+            1 => Color::Blue,
+            2 => Color::Green,
+            3 => Color::Cyan,
+            4 => Color::Red,
+            5 => Color::Magenta,
+            6 => Color::Brown,
+            7 => Color::LightGray,
+            8 => Color::DarkGray,
+            9 => Color::LightBlue,
+            10 => Color::LightGreen,
+            11 => Color::LightCyan,
+            12 => Color::LightRed,
+            13 => Color::Pink,
+            14 => Color::Yellow,
+            15 => Color::White,
+            _ => panic!("Unknown value: {}", value),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
 struct ColorCode(u8);
@@ -77,6 +101,10 @@ impl Writer {
                 self.column_position += 1;
             }
         }
+    }
+
+    pub fn change_color(&mut self, foreground: Color, background: Color) {
+        self.color_code = ColorCode::new(foreground, background);
     }
 
     fn new_line(&mut self) {
@@ -153,4 +181,18 @@ macro_rules! println {
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     WRITER.lock().write_fmt(args).unwrap();
+}
+
+// Macro to change color
+#[macro_export]
+macro_rules! change_color {
+    ($foreground:expr, $background:expr)=>{        
+        $crate::vga_buffer::_change_color($foreground, $background);
+    }
+}
+
+// Function for change_color!(...)
+#[doc(hidden)]
+pub fn _change_color(foreground: Color, background: Color) {
+    WRITER.lock().change_color(foreground, background);
 }
