@@ -9,6 +9,7 @@
 mod qemu;
 mod serial;
 mod vga_buffer;
+mod gdt;
 
 pub mod interrupts;
 
