@@ -48,8 +48,8 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 }
 
 pub fn init() {
-    gdt::init();
     interrupts::init_idt();
+    gdt::init();
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
 }

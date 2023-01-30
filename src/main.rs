@@ -71,6 +71,24 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("{} ({}) v{}", OS_NAME, OS_NAME_FULL, VERSION);
     println!("Boot successful!");
 
+/**********
+ * Based stuff
+**********/
+    change_fg!(vga_buffer::Color::LightCyan);
+    print!("T");
+    change_fg!(vga_buffer::Color::Pink);
+    print!("R");
+    change_fg!(vga_buffer::Color::White);
+    print!("A");
+    change_fg!(vga_buffer::Color::Pink);
+    print!("N");
+    change_fg!(vga_buffer::Color::LightCyan);
+    print!("S");
+    change_fg!(vga_buffer::Color::White);
+    println!(" Rights!");
+    println!("Yeah, that's right. This OS supports trans people");
+    println!("Follow @Steve12618831 on twitter. They're really cool!");
+
 /*********************
 * Paging
 *********************/
@@ -87,7 +105,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
 
     let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
-    unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e)};
+    unsafe { page_ptr.offset(20).write_volatile(0x_f021_f077_f065_f04e)};
 
     #[cfg(test)]
     test_main();
@@ -98,7 +116,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 * hlt_loop() to keep the OS running
     as long as we need it to.
  ****************************************/
-    midas::hlt_loop();   
+    midas::hlt_loop();
 }
 
 /****************************************
