@@ -12,6 +12,7 @@ mod vga_buffer;
 mod gdt;
 
 pub mod interrupts;
+pub mod memory;
 
 use core::panic::PanicInfo;
 
@@ -57,6 +58,13 @@ pub fn hlt_loop() -> ! {
     loop {
         x86_64::instructions::hlt();
     }
+}
+
+#[cfg(test)]
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
+    init();
+    test_main();
+    hlt_loop();
 }
 
 // Entry point for "cargo test"

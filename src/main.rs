@@ -17,7 +17,11 @@ mod qemu;
 mod serial;
 
 use core::panic::PanicInfo;
-use midas;
+use midas::memory::BootInfoFrameAllocator;
+use midas::{self, hlt_loop, memory};
+use x86_64::structures::paging::Page;
+use x86_64::{structures::paging::{Translate, page}, VirtAddr};
+use bootloader::{BootInfo, entry_point};
 
 static OS_NAME: &str = "MidAS";
 static OS_NAME_FULL: &str = "Midna Avery System";
@@ -55,52 +59,45 @@ fn _start_tests() {
     qemu::exit_qemu(qemu::QemuExitCode::Success);
 }
 
+entry_point!(kernel_main);
+
 #[no_mangle]
-pub extern "C" fn _start() -> ! {
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
     midas::init();
 
-    let usr = "Admin";
-    print!("Hey, ");
-    change_fg!(vga_buffer::Color::LightGreen);
-    print!("{}", usr);
-    change_fg!(vga_buffer::Color::White);
-    println!(".");
+/*******************
+ * Confirm OS booted
+*******************/
+    println!("{} ({}) v{}", OS_NAME, OS_NAME_FULL, VERSION);
+    println!("Boot successful!");
 
-    print!("Welcome to ");
-    // delay!(500);
-    change_fg!(vga_buffer::Color::LightBlue);
-    print!("Mid");
-    change_fg!(vga_buffer::Color::LightRed);
-    print!("A");
-    change_fg!(vga_buffer::Color::Yellow);
-    print!("S ");
-    change_fg!(vga_buffer::Color::White);
+/*********************
+* Paging
+*********************/
 
-/*************
-* Version Code                      
-**************/
-    println!("v{}", VERSION);
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe {
+        memory::init(phys_mem_offset)
+    };
+    let mut frame_allocator = unsafe {
+        BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
+
+    let page = Page::containing_address(VirtAddr::new(0xdeadbeef000));
+    memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
+
+    let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
+    unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e)};
 
     #[cfg(test)]
     test_main();
 
-/****************************************
-* Command line without any input handling                      
-****************************************/
-    change_fg!(vga_buffer::Color::LightGreen);
-    print!("{}", usr);
-    change_fg!(vga_buffer::Color::White);
-    print!("@");
-    change_fg!(vga_buffer::Color::LightRed);
-    print!("qemu");
-    change_fg!(vga_buffer::Color::White);
-    println!("> ");
-       
+    println!("We didn't crash! :D");
+    
  /****************************************
- * Infinite loop, to keep the operating
- 	system from stopping after 5ms
+* hlt_loop() to keep the OS running
+    as long as we need it to.
  ****************************************/
- 
     midas::hlt_loop();   
 }
 
