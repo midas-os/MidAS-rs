@@ -58,14 +58,14 @@ fn _start_tests() {
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     midas::init();
-    
+
     let usr = "Admin";
     print!("Hey, ");
     change_fg!(vga_buffer::Color::LightGreen);
     print!("{}", usr);
     change_fg!(vga_buffer::Color::White);
     println!(".");
-    
+
     print!("Welcome to ");
     // delay!(500);
     change_fg!(vga_buffer::Color::LightBlue);
@@ -84,15 +84,6 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-/*************************
-* Stack Overflow Exception                      
-**************************/
-    fn stack_overflow() {
-        stack_overflow();
-    }
-
-    stack_overflow();
-
 /****************************************
 * Command line without any input handling                      
 ****************************************/
@@ -103,13 +94,14 @@ pub extern "C" fn _start() -> ! {
     change_fg!(vga_buffer::Color::LightRed);
     print!("qemu");
     change_fg!(vga_buffer::Color::White);
-    print!("> ");
+    println!("> ");
        
  /****************************************
  * Infinite loop, to keep the operating
  	system from stopping after 5ms
  ****************************************/
-    loop {}
+ 
+    midas::hlt_loop();   
 }
 
 /****************************************
@@ -128,5 +120,6 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    midas::test_panic_handler(info)
+    midas::test_panic_handler(info);
+    midas::hlt_loop();
 }
