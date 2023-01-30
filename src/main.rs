@@ -21,6 +21,7 @@ use midas;
 
 static OS_NAME: &str = "MidAS";
 static OS_NAME_FULL: &str = "Midna Avery System";
+static VERSION: &str = env!("CARGO_PKG_VERSION"); 
 
 pub trait Testable {
     fn run(&self) -> ();
@@ -72,13 +73,25 @@ pub extern "C" fn _start() -> ! {
     change_fg!(vga_buffer::Color::LightRed);
     print!("A");
     change_fg!(vga_buffer::Color::Yellow);
-    println!("S");
+    print!("S ");
     change_fg!(vga_buffer::Color::White);
 
-    x86_64::instructions::interrupts::int3();
-    
+/*************
+* Version Code                      
+**************/
+    println!("v{}", VERSION);
+
     #[cfg(test)]
     test_main();
+
+/*************************
+* Stack Overflow Exception                      
+**************************/
+    fn stack_overflow() {
+        stack_overflow();
+    }
+
+    stack_overflow();
 
 /****************************************
 * Command line without any input handling                      
