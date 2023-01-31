@@ -19,7 +19,7 @@ mod kernel;
 
 use core::panic::PanicInfo;
 use midas::memory::BootInfoFrameAllocator;
-use midas::{self, hlt_loop, memory};
+use midas::{self, hlt_loop, memory, allocator};
 use x86_64::structures::paging::Page;
 use x86_64::{structures::paging::{Translate, page}, VirtAddr};
 use bootloader::{BootInfo, entry_point};
@@ -66,6 +66,17 @@ entry_point!(kernel_main);
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     midas::init();
 
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe {
+        memory::init(phys_mem_offset)
+    };
+    let mut frame_allocator = unsafe {
+        BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
+
+    allocator::init_heap(&mut mapper, &mut frame_allocator)
+        .expect("heap initialization failed");
+
 /*******************
  * Confirm OS booted
 *******************/
@@ -95,7 +106,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     println!("Boot Complete");
     
-    kernel::post_boot_sqc(boot_info);
+    kernel::post_boot_sqc(boot_info, &mut mapper, &mut frame_allocator, phys_mem_offset);
 
     midas::hlt_loop()
 }
