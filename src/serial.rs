@@ -1,3 +1,11 @@
+/**************************************************************************************************
+* Name : 									   serial.rs
+* Author : 										Avery
+* Date : 									  1/30/2023
+* Purpose : 					    Communication to host machine
+* Version : 									 0.1
+**************************************************************************************************/
+
 use uart_16550::SerialPort;
 use spin::Mutex;
 use lazy_static::lazy_static;

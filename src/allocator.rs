@@ -1,3 +1,11 @@
+/**************************************************************************************************
+* Name : 									   allocator.rs
+* Author : 										Avery
+* Date : 									  1/31/2023
+* Purpose : 					      Allocator for Heap Memory
+* Version : 									 0.1
+**************************************************************************************************/
+
 use linked_list_allocator::LockedHeap;
 use x86_64::{
     structures::paging::{

@@ -1,3 +1,11 @@
+/**************************************************************************************************
+* Name : 									   main.rs
+* Author : 										Avery
+* Date : 									  1/28/2023
+* Purpose : 			   GlobalDescriptorTable to manage DoubleFaults
+* Version : 									 0.1
+**************************************************************************************************/
+
 use x86_64::VirtAddr;
 use x86_64::structures::tss::TaskStateSegment;
 use x86_64::structures::gdt::{GlobalDescriptorTable, Descriptor};
