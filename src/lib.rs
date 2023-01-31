@@ -5,12 +5,17 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
+#![feature(alloc_error_handler)]
+
+extern crate alloc;
+
+pub mod allocator;
 
 mod qemu;
 mod serial;
-mod vga_buffer;
 mod gdt;
 
+pub mod vga_buffer;
 pub mod interrupts;
 pub mod memory;
 
@@ -45,6 +50,10 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("Error: {}\n", info);
     qemu::exit_qemu(qemu::QemuExitCode::Failed);
     hlt_loop();
+}
+
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocation error: {:?}", layout)
 }
 
 pub fn init() {
