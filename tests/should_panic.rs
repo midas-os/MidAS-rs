@@ -6,7 +6,7 @@
 
 use core::panic::PanicInfo;
 use midas::qemu::{QemuExitCode, exit_qemu};
-use midas::serial::{serial_println, serial_print};
+use midas::{serial_println, serial_print};
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
