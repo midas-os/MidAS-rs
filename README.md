@@ -12,6 +12,8 @@ qemu for 64-bit systems (Downloads at [qemu.org](https://qemu.org/download))<br>
 3. Add *llvm-tools-preview* with ``rustup component add llvm-tools-preview``
 4. ``cargo run``
 
+If you have any issues create an [issue](https://github.com/MindlessSea/MidAS/issues/new)!
+
 # Learning Resources
 - [Get Started with OSDev in Rust](https://os.phil-opp.com)
 - [OSDev Wiki (C/C++ & Rust)](https://wiki.osdev.org/Main_Page)
