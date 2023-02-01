@@ -1,9 +1,9 @@
 <div align="center">
   <h1>MidAS</h1>
   <p>I totally didn't steal this from <a href="https://github.com/jdadonut/veil">veil</a></p>
-    <img src="https://img.shields.io/github/repo-size/mindlesssea/midas?style=for-the-badge"/>
-    <img src="https://img.shields.io/github/languages/top/mindlesssea/midas?style=for-the-badge"/>
-    <img src="https://img.shields.io/github/commit-activity/m/mindlesssea/midas?style=for-the-badge"/>
+    <img src="https://img.shields.io/github/repo-size/mindlesssea/midas"/>
+    <img src="https://img.shields.io/github/languages/top/mindlesssea/midas?"/>
+    <img src="https://img.shields.io/github/commit-activity/m/mindlesssea/midas"/>
 </div>
 <div>
   <h1>How to run</h1>
