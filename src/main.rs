@@ -2,8 +2,8 @@
 * Name : 									   main.rs
 * Author : 										Avery
 * Date : 									  1/28/2023
-* Purpose : 					   Driver for operating system code
-* Version : 									 0.1
+* Purpose : 					            Setup & tests
+* Version : 									 0.2
 **************************************************************************************************/
 
 #![no_std]
