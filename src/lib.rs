@@ -1,3 +1,11 @@
+/**************************************************************************************************
+* Name : 									   lib.rs
+* Author : 										Avery
+* Date : 									  1/30/2023
+* Purpose :                                Library Manager
+* Version : 									 0.1
+**************************************************************************************************/
+
 #![no_std]
 
 #![cfg_attr(test, no_main)]
@@ -5,13 +13,21 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
+#![feature(alloc_error_handler)]
+#![feature(const_mut_refs)]
+
+extern crate alloc;
+
+pub mod allocator;
 
 mod qemu;
 mod serial;
-mod vga_buffer;
 mod gdt;
 
+pub mod task;
+pub mod vga_buffer;
 pub mod interrupts;
+pub mod memory;
 
 use core::panic::PanicInfo;
 
@@ -43,13 +59,31 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("[failed]\n");
     serial_println!("Error: {}\n", info);
     qemu::exit_qemu(qemu::QemuExitCode::Failed);
-    loop {}
+    hlt_loop();
+}
+
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocation error: {:?}", layout)
 }
 
 pub fn init() {
-    gdt::init();
     interrupts::init_idt();
+    gdt::init();
     unsafe { interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
+}
+
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
+}
+
+#[cfg(test)]
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
+    init();
+    test_main();
+    hlt_loop();
 }
 
 // Entry point for "cargo test"

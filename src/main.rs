@@ -2,8 +2,8 @@
 * Name : 									   main.rs
 * Author : 										Avery
 * Date : 									  1/28/2023
-* Purpose : 					   Driver for operating system code
-* Version : 									 0.1
+* Purpose : 					            Setup & tests
+* Version : 									 0.2
 **************************************************************************************************/
 
 #![no_std]
@@ -15,9 +15,14 @@
 mod vga_buffer;
 mod qemu;
 mod serial;
+mod kernel;
 
 use core::panic::PanicInfo;
-use midas;
+use midas::memory::BootInfoFrameAllocator;
+use midas::{self, hlt_loop, memory, allocator};
+use x86_64::structures::paging::Page;
+use x86_64::{structures::paging::{Translate, page}, VirtAddr};
+use bootloader::{BootInfo, entry_point};
 
 static OS_NAME: &str = "MidAS";
 static OS_NAME_FULL: &str = "Midna Avery System";
@@ -55,61 +60,55 @@ fn _start_tests() {
     qemu::exit_qemu(qemu::QemuExitCode::Success);
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    midas::init();
-    
-    let usr = "Admin";
-    print!("Hey, ");
-    change_fg!(vga_buffer::Color::LightGreen);
-    print!("{}", usr);
-    change_fg!(vga_buffer::Color::White);
-    println!(".");
-    
-    print!("Welcome to ");
-    // delay!(500);
-    change_fg!(vga_buffer::Color::LightBlue);
-    print!("Mid");
-    change_fg!(vga_buffer::Color::LightRed);
-    print!("A");
-    change_fg!(vga_buffer::Color::Yellow);
-    print!("S ");
-    change_fg!(vga_buffer::Color::White);
+entry_point!(kernel_main);
 
-/*************
-* Version Code                      
-**************/
-    println!("v{}", VERSION);
+#[no_mangle]
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
+    midas::init();
+
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe {
+        memory::init(phys_mem_offset)
+    };
+    let mut frame_allocator = unsafe {
+        BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
+
+    allocator::init_heap(&mut mapper, &mut frame_allocator)
+        .expect("heap initialization failed");
+
+/*******************
+ * Confirm OS booted
+*******************/
+    println!("{} ({}) v{}", OS_NAME, OS_NAME_FULL, VERSION);
+    println!("Boot successful!");
+
+/**********
+ * Based stuff
+**********/
+    change_fg!(vga_buffer::Color::LightCyan);
+    print!("T");
+    change_fg!(vga_buffer::Color::Pink);
+    print!("R");
+    change_fg!(vga_buffer::Color::White);
+    print!("A");
+    change_fg!(vga_buffer::Color::Pink);
+    print!("N");
+    change_fg!(vga_buffer::Color::LightCyan);
+    print!("S");
+    change_fg!(vga_buffer::Color::White);
+    println!(" Rights!");
+    println!("Yeah, that's right. This OS supports trans people");
+    println!("Follow @Steve12618831 on twitter. They're really cool!");
 
     #[cfg(test)]
     test_main();
 
-/*************************
-* Stack Overflow Exception                      
-**************************/
-    fn stack_overflow() {
-        stack_overflow();
-    }
+    println!("Boot Complete");
+    
+    kernel::post_boot_sqc(boot_info, &mut mapper, &mut frame_allocator, phys_mem_offset);
 
-    stack_overflow();
-
-/****************************************
-* Command line without any input handling                      
-****************************************/
-    change_fg!(vga_buffer::Color::LightGreen);
-    print!("{}", usr);
-    change_fg!(vga_buffer::Color::White);
-    print!("@");
-    change_fg!(vga_buffer::Color::LightRed);
-    print!("qemu");
-    change_fg!(vga_buffer::Color::White);
-    print!("> ");
-       
- /****************************************
- * Infinite loop, to keep the operating
- 	system from stopping after 5ms
- ****************************************/
-    loop {}
+    midas::hlt_loop()
 }
 
 /****************************************
@@ -128,5 +127,6 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    midas::test_panic_handler(info)
+    midas::test_panic_handler(info);
+    midas::hlt_loop();
 }
