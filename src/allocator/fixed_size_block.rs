@@ -1,5 +1,5 @@
 /**************************************************************************************************
-* Name : 							allocator/fixed_size_block.rs
+* Name : 							 allocator/fixed_size_block.rs
 * Author : 										Avery
 * Date : 									  2/01/2023
 * Purpose : 					Heap Allocation with blocks of fixed sizes
@@ -80,7 +80,7 @@ impl FixedSizeBlockAllocator {
     }
 
     pub unsafe fn init(&mut self, heap_start: usize, heap_size: usize) {
-        self.fallback_allocator.init(heap_start, heap_size);
+        self.fallback_allocator.init(heap_start as *mut u8, heap_size);
     }
 
     pub const fn new() -> Self {
