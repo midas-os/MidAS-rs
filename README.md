@@ -8,7 +8,7 @@
 <div>
   <h1>How to run</h1>
   <h2> Requirements:</h2>
-  Install Rust Nightly (Install with <code>rustup default nightly<code>)<br>
+  Install Rust Nightly (Install with <code>rustup default nightly</code>)<br>
   qemu for 64-bit systems (Downloads at [qemu.org](https://qemu.org/download))<br>
 
   <h2>Running</h2>
