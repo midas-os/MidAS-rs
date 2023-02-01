@@ -31,14 +31,11 @@ pub fn post_boot_sqc(_boot_info: &'static BootInfo, mapper: &mut OffsetPageTable
 /*********************
 * Paging
 *********************/
-    let page = Page::containing_address(VirtAddr::new(0));
-    memory::create_example_mapping(page, mapper, frame_allocator);
+    let page = memory::create_page(0, mapper, frame_allocator);
+    memory::write_page_vol(page, 0x14, 0x_f021_f077_f065_f04e);
 
     let mut executor = Executor::new();
     executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
-
-    let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
-    unsafe { page_ptr.offset(0x14).write_volatile(0x_f021_f077_f065_f04e)};    
 }
