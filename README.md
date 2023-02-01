@@ -2,12 +2,15 @@
 ## Rust in OS Development
 
 # How to run
-In order to run Midas, you have to do a few things.<br>
-Step 1. Install QEMU for a 64-bit system<br>
-Step 2. Add qemu-x86_64 to your path<br>
-Step 3. Run ``cargo run`` in the Project Directory<br>
-Step 4. If you encounter any bugs contact us on Discord or open a new issue!<br>
-Step 5. Have fun messing around the source code and OS!<br>
+## Requirements:
+Install Rust Nightly (Install with ``rustup default nightly``)<br>
+qemu for 64-bit systems (Downloads at [qemu.org](https://qemu.org/download))<br>
+
+## Running
+1. Make sure *qemu* is added to your *path*
+2. Make sure *rust* is installed (run ``rustc --version``)
+3. Add *llvm-tools-preview* with ``rustup component add llvm-tools-preview``
+4. ``cargo run``
 
 # Learning Resources
 - [Get Started with OSDev in Rust](https://os.phil-opp.com)
