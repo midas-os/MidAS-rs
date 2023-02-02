@@ -6,7 +6,10 @@
     <img src="https://img.shields.io/github/commit-activity/m/mindlesssea/midas"/>
 </div>
 <div>
-  <h1>How to run</h1>
+  <h1>Welcome to MidAS!</h1>
+  <p>The Midna Avery System</p>
+  <img align="center" src="github/command_line.gif" width=400 />
+  <h1><br>How to run</h1>
   <h2> Requirements:</h2>
   Install Rust Nightly (Install with ``rustup default nightly``)<br>
   qemu for 64-bit systems (Downloads at [qemu.org](https://qemu.org/download))<br>

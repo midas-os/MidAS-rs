@@ -45,7 +45,13 @@ pub fn init() {
     add_command(Command::new("based", "Prints cool stuff", print_based));
 
     println!("Welcome to the command line interface!");
-    println!("Type 'help' to see a list of commands");
+    print!("Type ");
+    
+    change_fg!(Color::LightGreen);
+    print!("'help'");
+    change_fg!(Color::White);
+
+    println!(" to see a list of commands");
 
     unsafe {
         COMMAND_LINE_ACTIVE = true;
