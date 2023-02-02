@@ -9,7 +9,7 @@
 use conquer_once::spin::{OnceCell};
 use crossbeam_queue::ArrayQueue;
 use crate::{print, println, change_fg, vga_buffer::Color, cmd};
-use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
+use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1, KeyCode};
 use core::{pin::Pin, task::{Poll, Context}};
 use futures_util::{task::AtomicWaker, stream::{Stream, StreamExt}};
 
@@ -99,7 +99,25 @@ pub async fn print_keypresses() {
                             print!("{}", character);
                         }
                     }
-                    DecodedKey::RawKey(key) => print!("{:?}", key),
+                    DecodedKey::RawKey(key) => {
+                        let key_u8 = key as u8;
+
+                        /************************************
+                        * Check if key is between 0x0 and 0x5
+                        ************************************/
+                        for i in 0x0..=0x5 {
+                            if key_u8 == i {
+                                continue;
+                            }
+                        }
+
+                        /************************************
+                        * Check if key is 0x21, 0x40, or 0x41
+                        ************************************/
+                        if key_u8 == 0x21 || key_u8 == 0x40 || key_u8 == 0x41 {
+                            continue;
+                        }
+                    }
                 }
             }
         }
