@@ -14,6 +14,8 @@ pub mod keyboard;
 use core::{task::{Context, Poll}, future::Future, pin::Pin, sync::atomic::{AtomicU64, Ordering}};
 use alloc::boxed::Box;
 
+use crate::print;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct TaskId(u64);
 

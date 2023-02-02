@@ -83,24 +83,6 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("{} ({}) v{}", OS_NAME, OS_NAME_FULL, VERSION);
     println!("Boot successful!");
 
-/**********
- * Based stuff
-**********/
-    change_fg!(vga_buffer::Color::LightCyan);
-    print!("T");
-    change_fg!(vga_buffer::Color::Pink);
-    print!("R");
-    change_fg!(vga_buffer::Color::White);
-    print!("A");
-    change_fg!(vga_buffer::Color::Pink);
-    print!("N");
-    change_fg!(vga_buffer::Color::LightCyan);
-    print!("S");
-    change_fg!(vga_buffer::Color::White);
-    println!(" Rights!");
-    println!("Yeah, that's right. This OS supports trans people");
-    println!("Follow @Steve12618831 on twitter. They're really cool!");
-
     #[cfg(test)]
     test_main();
 

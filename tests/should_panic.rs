@@ -9,10 +9,16 @@ use midas::qemu::{QemuExitCode, exit_qemu};
 use midas::{serial_println, serial_print};
 
 #[no_mangle]
+#[cfg(test)]
 pub extern "C" fn _start() -> ! {
-    test_main();
-
+    should_fail();
     loop {}
+}
+
+#[test_case]
+fn test_main() {
+    serial_println!("Running should_panic tests...");
+    should_fail();
 }
 
 #[test_case]
