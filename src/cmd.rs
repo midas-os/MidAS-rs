@@ -197,8 +197,8 @@ fn credits(_cmd: &mut String) {
     change_fg!(Color::LightGreen);
     println!("MidAS was created by:");
     change_fg!(Color::White);
-    println!("Avery - @mindlessea on GitHub");
-    println!("Midna - @midnightmidna on GitHub");
+    println!("Avery - @MindlessSea on GitHub");
+    println!("Midna - @Midnight-Midna on GitHub");
 
     change_fg!(Color::LightGreen);
     println!("\nSpecial thanks to:");
