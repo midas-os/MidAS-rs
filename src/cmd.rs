@@ -1,5 +1,13 @@
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen};
-use alloc::{vec::Vec, boxed::Box, string::{String}, borrow::ToOwned};
+/**************************************************************************************************
+* Name : 									    cmd.rs
+* Author : 										Avery
+* Date : 									  2/02/2023
+* Purpose :                       Command line interface for MidAS
+* Version : 									 0.1
+**************************************************************************************************/
+
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info};
+use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -11,7 +19,19 @@ static mut COMMAND_LINE_ACTIVE: bool = false;
 static mut COMMAND_LINE_BUFFER: [u8; 512] = [0; 512];
 static mut CURRENT_INDEX: u16 = 0;
 
-pub static COMMAND_PREFIX: &str = "midas> ";
+lazy_static! {
+    static ref DEVICE_NAME: Mutex<String> = Mutex::new("qemu".to_string());
+}
+
+pub fn get_command_prefix() -> String {
+    let mut prefix = String::new();
+    prefix.push_str(DEVICE_NAME.lock().as_str());
+    prefix.push_str("@midas> ");
+
+    // unsafe { DEVICE_NAME.force_unlock(); }
+    
+    prefix
+} 
 
 #[derive(Clone, Copy)]
 struct Command {
@@ -40,10 +60,20 @@ fn add_command(command: Command) {
 }
 
 pub fn init() {
+    /***************************************************
+    * add commands to command list so they can be called
+    ***************************************************/
     add_command(Command::new("help", "Show this help message", help));
     add_command(Command::new("clear", "Clear the screen", clear));
     add_command(Command::new("echo", "Echoes the input", echo));
     add_command(Command::new("based", "Prints cool stuff", print_based));
+    add_command(Command::new("version", "Shows current Version", version_info));
+    add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
+    add_command(Command::new("credits", "Shows who worked on the OS!", credits));
+
+    /**********************
+    * print welcome message
+    *********************/
 
     println!("Welcome to the command line interface!");
     print!("Type ");
@@ -58,7 +88,7 @@ pub fn init() {
         COMMAND_LINE_ACTIVE = true;
     }
 
-    print!("{}", COMMAND_PREFIX);
+    print!("{}", get_command_prefix());
 }
 
 pub fn uninit() {
@@ -104,7 +134,14 @@ pub(crate) fn process_command() {
 
     for cmd in COMMANDS.lock().iter() {
         if cmd.name == args[0] {
-            (cmd.function)(&mut command.to_owned());
+            // cmd.function(&'static mut args);
+            let mut cmd_str = String::new();
+            for arg in args.iter().skip(1) {
+                cmd_str.push_str(arg);
+                cmd_str.push(' ');
+            }
+
+            (cmd.function)(&mut cmd_str);
             command_found = true;
             break;
         }
@@ -117,6 +154,9 @@ pub(crate) fn process_command() {
         change_fg!(Color::White);
     }
 
+    /******************************
+    * reset the command line buffer
+    ******************************/
     unsafe {
         COMMAND_LINE_BUFFER = [0; 512];
     }
@@ -132,6 +172,68 @@ fn help(_cmd: &mut String) {
     for cmd in COMMANDS.lock().iter() {
         println!("{} - {}", cmd.name, cmd.description);
     }
+}
+
+fn rename_device(cmd: &mut String) {
+    let args = cmd.split(' ').collect::<Vec<&str>>();
+
+    if args.len() == 1 {
+        println!("Usage: rename_device <text>");
+        return;
+    }
+
+    println!("Renaming device to \"{}\"", args[0]);
+    DEVICE_NAME.lock().clear();
+    DEVICE_NAME.lock().push_str(args[0]);
+}
+
+fn credits(_cmd: &mut String) {
+    /************************************************************************************
+     * Added credits because without the people here, it wouldn't even have been possible
+        for me to even get a basic vga_buffer running.
+        - Avery
+    ************************************************************************************/
+
+    change_fg!(Color::LightGreen);
+    println!("MidAS was created by:");
+    change_fg!(Color::White);
+    println!("Avery - @MindlessSea on GitHub");
+    println!("Midna - @Midnight-Midna on GitHub");
+
+    change_fg!(Color::LightGreen);
+    println!("\nSpecial thanks to:");
+    change_fg!(Color::White);
+
+    /************
+    * RustOS team
+    ************/
+    println!("The RustOS team - @rust-osdev on GitHub");
+    print!("for Developing RustOS libraries\n\n");
+
+    /******************
+    * Phillip Oppermann
+    ******************/
+    println!("The Phillip Oppermann - @phil-opp on GitHub");
+    print!("for Developing the blog series \"Writing an OS in Rust\"\n\n");
+
+    /**********
+    * Jai/Aenri
+    **********/
+    println!("Jai/Aenri - @jdadonut on GitHub");
+    println!("for helping Avery out with fixing bugs");
+    print!("(she made an OS called ");
+
+    change_fg!(Color::Pink);
+    print!("\"veil\"");
+    change_fg!(Color::White);
+
+    println!(" go check it out!)\n\n");
+
+    /**********
+    * Rust Team
+    **********/
+    println!("The Rust team - @rust-lang on GitHub");
+    print!("for developing Rust\n\n");
 }
 
 fn echo(cmd: &mut String) {
@@ -155,6 +257,12 @@ fn echo(cmd: &mut String) {
 fn clear(_cmd: &mut String) {
     change_bg!(Color::Black);
     change_fg!(Color::White);
+
+    // reset the cursor position
+    unsafe {
+        CURRENT_INDEX = 0;
+    }
+
     clear_screen!();
 }
 
@@ -173,8 +281,30 @@ fn print_based(_cmd: &mut String) {
     print!("N");
     change_fg!(Color::LightCyan);
     print!("S");
+    
     change_fg!(Color::White);
-    println!(" Rights!");
+    print!(" Rights are ");
+
+    change_fg!(Color::LightCyan);
+    print!("H");
+    change_fg!(Color::Pink);
+    print!("U");
+    change_fg!(Color::White);
+    print!("M");
+    change_fg!(Color::Pink);
+    print!("A");
+    change_fg!(Color::LightCyan);
+    print!("N");
+    change_fg!(Color::White);
+    print!(" Rights");
+    println!();
+}
+
+fn version_info(_cmd: &mut String) {
+    print!("{}", os_info::OS_NAME);
+    change_fg!(Color::LightCyan);
+    println!(" v{}", os_info::VERSION);
+    change_fg!(Color::White);
 }
 
 pub(crate) fn add_char(key: pc_keyboard::DecodedKey) {
@@ -204,7 +334,7 @@ pub(crate) fn add_char(key: pc_keyboard::DecodedKey) {
     }
 
     unsafe {
-        CURRENT_INDEX = (buffer.iter().position(|&x| x == 0).unwrap() as u16);
+        CURRENT_INDEX = buffer.iter().position(|&x| x == 0).unwrap() as u16;
     }
 }
 

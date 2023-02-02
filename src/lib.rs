@@ -27,6 +27,7 @@ pub mod vga_buffer;
 pub mod interrupts;
 pub mod memory;
 pub mod cmd;
+pub mod os_info;
 
 use core::panic::PanicInfo;
 
