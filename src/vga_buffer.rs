@@ -213,6 +213,14 @@ pub fn _print(args: fmt::Arguments) {
     });
 }
 
+// Function to clear the entire screen
+#[doc(hidden)]
+pub(crate) fn _clear_screen() {
+    for _ in 0..BUFFER_HEIGHT {
+        println!();
+    }
+}
+
 // Macro to change foreground/background color
 #[macro_export]
 macro_rules! change_color {
@@ -230,11 +238,19 @@ macro_rules! change_fg {
     };
 }
 
+/// Macro to change background color
 #[macro_export]
-/// Changes background color
 macro_rules! change_bg {
     ($background:expr) => {
         $crate::vga_buffer::_change_bg($background);
+    };
+}
+
+/// Macro to clear screen
+#[macro_export]
+macro_rules! clear_screen {
+    () => {
+        $crate::vga_buffer::_clear_screen();
     };
 }
 
@@ -275,11 +291,5 @@ fn test_println_output() {
     for (i, c) in s.chars().enumerate() {
         let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
         assert_eq!(char::from(screen_char.ascii_character), c);
-    }
-}
-
-pub(crate) fn clear_screen() {
-    for _ in 0..BUFFER_HEIGHT {
-        println!();
     }
 }

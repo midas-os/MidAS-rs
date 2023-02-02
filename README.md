@@ -1,17 +1,22 @@
 <div align="center">
-  <h1>MidAS</h1>
-  <p>I totally didn't steal this from <a href="https://github.com/jdadonut/veil">veil</a></p>
-    <img src="https://img.shields.io/github/repo-size/mindlesssea/midas"/>
-    <img src="https://img.shields.io/github/languages/top/mindlesssea/midas?"/>
-    <img src="https://img.shields.io/github/commit-activity/m/mindlesssea/midas"/>
-</div>
-<div>
+  <img src="https://img.shields.io/github/last-commit/mindlesssea/midas?style=for-the-badge&color=yellow"/>
+  <img src="https://img.shields.io/github/issues/mindlesssea/midas?style=for-the-badge&color=d41c43"/>
+  <img src="https://img.shields.io/github/issues-pr/mindlesssea/midas?style=for-the-badge&color=brightgreen"/>
+  <div width=100%></div>
+  <img src="https://img.shields.io/github/license/mindlesssea/midas?style=for-the-badge&color=brightgreen"/>
+  <img src="https://img.shields.io/github/languages/code-size/mindlesssea/midas?style=for-the-badge&color=blue"/>
+  <img src="https://img.shields.io/github/languages/top/mindlesssea/midas?style=for-the-badge&color=f66700"/>
+  <hr>
+  <h1>Welcome to MidAS!</h1>
+    <p>MidAS is a hobby operating system written in <a href="https://www.rust-lang.org/">Rust</a></p>
+  <img src="github/command_line.gif" width=350>  
+
   <h1>How to run</h1>
   <h2> Requirements:</h2>
   Install Rust Nightly (Install with <code>rustup default nightly</code>)<br>
-  qemu for 64-bit systems (Downloads at [qemu.org](https://qemu.org/download))<br>
+  qemu for 64-bit systems (Downloads at <a href="https://qemu.org/download">qemu.org</a>)<br>
 
-  <h2>Running</h2>
+  <h2>Building / Running</h2>
   <ul>
     <li>Make sure <i>qemu</i> is added to your <i>path</i></li>
     <li>Make sure <i>rust</i> is installed (run <code>rustc --version</code>)</li>

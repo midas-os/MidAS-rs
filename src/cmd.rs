@@ -1,5 +1,5 @@
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color};
-use alloc::{vec::Vec, boxed::Box, string::{String, ToString}, borrow::ToOwned};
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen};
+use alloc::{vec::Vec, boxed::Box, string::{String}, borrow::ToOwned};
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -8,7 +8,8 @@ lazy_static! {
 }
 
 static mut COMMAND_LINE_ACTIVE: bool = false;
-static mut COMMAND_LINE_BUFFER: [u8; 256] = [0; 256];
+static mut COMMAND_LINE_BUFFER: [u8; 512] = [0; 512];
+static mut CURRENT_INDEX: u16 = 0;
 
 pub static COMMAND_PREFIX: &str = "midas> ";
 
@@ -45,7 +46,13 @@ pub fn init() {
     add_command(Command::new("based", "Prints cool stuff", print_based));
 
     println!("Welcome to the command line interface!");
-    println!("Type 'help' to see a list of commands");
+    print!("Type ");
+    
+    change_fg!(Color::LightGreen);
+    print!("'help'");
+    change_fg!(Color::White);
+
+    println!(" to see a list of commands");
 
     unsafe {
         COMMAND_LINE_ACTIVE = true;
@@ -111,21 +118,19 @@ pub(crate) fn process_command() {
     }
 
     unsafe {
-        COMMAND_LINE_BUFFER = [0; 256];
+        COMMAND_LINE_BUFFER = [0; 512];
     }
 }
 
 fn help(_cmd: &mut String) {
+    unsafe {
+        COMMANDS.force_unlock();
+    }
+    
     println!("Commands:");
 
-    change_fg!(Color::Yellow);
-    println!("The \"help\" command is broken right now. Sorry!");
-    change_fg!(Color::White);
-
-    return;
-
     for cmd in COMMANDS.lock().iter() {
-        println!("TEST");
+        println!("{} - {}", cmd.name, cmd.description);
     }
 }
 
@@ -150,7 +155,7 @@ fn echo(cmd: &mut String) {
 fn clear(_cmd: &mut String) {
     change_bg!(Color::Black);
     change_fg!(Color::White);
-    crate::vga_buffer::clear_screen();
+    clear_screen!();
 }
 
 fn print_based(_cmd: &mut String) {
@@ -197,8 +202,23 @@ pub(crate) fn add_char(key: pc_keyboard::DecodedKey) {
             }
         }
     }
+
+    unsafe {
+        CURRENT_INDEX = (buffer.iter().position(|&x| x == 0).unwrap() as u16);
+    }
 }
 
 pub(crate) fn backspace() {
-    print!("\u{8}");
+    if unsafe { CURRENT_INDEX == 0 } {
+        return;
+    }
+
+    unsafe {
+        let mut buffer = &mut COMMAND_LINE_BUFFER;
+        buffer[CURRENT_INDEX as usize] = 0;
+        buffer[CURRENT_INDEX as usize - 1] = 0;
+        CURRENT_INDEX -= 1;
+    }
+
+    print!("\u{08}");
 }
