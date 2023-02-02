@@ -18,10 +18,8 @@ mod serial;
 mod kernel;
 
 use core::panic::PanicInfo;
-use midas::memory::BootInfoFrameAllocator;
-use midas::{self, hlt_loop, memory, allocator};
-use x86_64::structures::paging::Page;
-use x86_64::{structures::paging::{Translate, page}, VirtAddr};
+use midas::{memory::{BootInfoFrameAllocator, self}, self, allocator};
+use x86_64::{VirtAddr};
 use bootloader::{BootInfo, entry_point};
 
 static OS_NAME: &str = "MidAS";
@@ -77,18 +75,10 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
-/*******************
- * Confirm OS booted
-*******************/
-    println!("{} ({}) v{}", OS_NAME, OS_NAME_FULL, VERSION);
-    println!("Boot successful!");
-
     #[cfg(test)]
     test_main();
 
-    println!("Boot Complete");
-    
-    kernel::post_boot_sqc(boot_info, &mut mapper, &mut frame_allocator, phys_mem_offset);
+    kernel::main(boot_info, &mut mapper, &mut frame_allocator, phys_mem_offset);
 
     midas::hlt_loop()
 }

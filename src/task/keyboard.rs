@@ -92,7 +92,7 @@ pub async fn print_keypresses() {
                 match real_key {
                     DecodedKey::Unicode(character) => {
                         if character == '\u{80}' {
-                            print!("\n{}", cmd::COMMAND_PREFIX);
+                            print!("\n{}", cmd::get_command_prefix());
                         } else if character == '\u{08}' {
                             continue;
                         } else {

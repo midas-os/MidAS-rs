@@ -9,18 +9,13 @@
 extern crate alloc;
 
 use bootloader::BootInfo;
-use midas::{
-    change_bg, change_color, change_fg,
-    memory::{self, BootInfoFrameAllocator},
-    cmd,
-    print, println,
-    task::{executor::Executor, keyboard, Task},
-    vga_buffer,
-};
-use x86_64::{
-    structures::paging::{OffsetPageTable, Page},
-    VirtAddr,
-};
+use midas::{task::{executor::Executor, keyboard, Task}, cmd};
+use crate::{memory::BootInfoFrameAllocator, println};
+use x86_64::{structures::paging::OffsetPageTable, VirtAddr};
+
+pub static OS_NAME: &str = "MidAS";
+pub static OS_NAME_FULL: &str = "Midna Avery System";
+pub static VERSION: &str = env!("CARGO_PKG_VERSION"); 
 
 async fn async_string() -> &'static str {
     "Hello from async_string()!"
@@ -33,13 +28,14 @@ async fn example_task() {
     println!("{}", s);
 }
 
-pub fn post_boot_sqc(
+pub fn main(
     _boot_info: &'static BootInfo,
     mapper: &mut OffsetPageTable,
     frame_allocator: &mut BootInfoFrameAllocator,
     phys_mem_offset: VirtAddr,
-) {
-    println!("Booted into kernel.rs::post_boot_sqc()");
+) {    
+    println!("{} v{}", OS_NAME, VERSION);
+    println!("Boot successful!");
 
     let mut executor = Executor::new();
     //executor.spawn(Task::new(example_task()));
