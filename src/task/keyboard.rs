@@ -81,6 +81,9 @@ pub async fn print_keypresses() {
                     if key == DecodedKey::Unicode('\n') {
                         cmd::process_command();
                         real_key = DecodedKey::Unicode('\u{80}');
+                    } else if key == DecodedKey::Unicode('\u{08}') {
+                        cmd::backspace();
+                        continue;
                     } else {
                         cmd::add_char(key);
                     }
@@ -89,7 +92,9 @@ pub async fn print_keypresses() {
                 match real_key {
                     DecodedKey::Unicode(character) => {
                         if character == '\u{80}' {
-                            print!("{}", cmd::COMMAND_PREFIX);
+                            print!("\n{}", cmd::COMMAND_PREFIX);
+                        } else if character == '\u{08}' {
+                            continue;
                         } else {
                             print!("{}", character);
                         }
