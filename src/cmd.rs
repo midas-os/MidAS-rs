@@ -1,4 +1,4 @@
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color};
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}, borrow::ToOwned};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -150,7 +150,7 @@ fn echo(cmd: &mut String) {
 fn clear(_cmd: &mut String) {
     change_bg!(Color::Black);
     change_fg!(Color::White);
-    crate::vga_buffer::clear_screen();
+    clear_screen!();
 }
 
 fn print_based(_cmd: &mut String) {
