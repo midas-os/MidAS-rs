@@ -60,6 +60,9 @@ fn add_command(command: Command) {
 }
 
 pub fn init() {
+    /***************************************************
+    * add commands to command list so they can be called
+    ***************************************************/
     add_command(Command::new("help", "Show this help message", help));
     add_command(Command::new("clear", "Clear the screen", clear));
     add_command(Command::new("echo", "Echoes the input", echo));
@@ -67,6 +70,10 @@ pub fn init() {
     add_command(Command::new("version", "Shows current Version", version_info));
     add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
     add_command(Command::new("credits", "Shows who worked on the OS!", credits));
+
+    /**********************
+    * print welcome message
+    *********************/
 
     println!("Welcome to the command line interface!");
     print!("Type ");
@@ -147,6 +154,9 @@ pub(crate) fn process_command() {
         change_fg!(Color::White);
     }
 
+    /******************************
+    * reset the command line buffer
+    ******************************/
     unsafe {
         COMMAND_LINE_BUFFER = [0; 512];
     }
@@ -178,11 +188,11 @@ fn rename_device(cmd: &mut String) {
 }
 
 fn credits(_cmd: &mut String) {
-    /*******************************************************************
-     * Added credits because without them, this wouldn't be possible
-        for me to even make text print on a screen
+    /************************************************************************************
+     * Added credits because without the people here, it wouldn't even have been possible
+        for me to even get a basic vga_buffer running.
         - Avery
-    *******************************************************************/
+    ************************************************************************************/
 
     change_fg!(Color::LightGreen);
     println!("MidAS was created by:");
