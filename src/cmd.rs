@@ -257,6 +257,12 @@ fn echo(cmd: &mut String) {
 fn clear(_cmd: &mut String) {
     change_bg!(Color::Black);
     change_fg!(Color::White);
+
+    // reset the cursor position
+    unsafe {
+        CURRENT_INDEX = 0;
+    }
+
     clear_screen!();
 }
 
