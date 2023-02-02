@@ -8,7 +8,7 @@
 
 use super::{align_up, Locked};
 use alloc::alloc::{GlobalAlloc, Layout};
-use core::{mem, ptr::{self, null}};
+use core::{mem, ptr::{self}};
 
 struct ListNode {
     size: usize,

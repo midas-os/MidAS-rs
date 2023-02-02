@@ -1,9 +1,8 @@
-#[allow(dead_code)]
-
-use volatile::Volatile;
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
+#[allow(dead_code)]
+use volatile::Volatile;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -119,7 +118,7 @@ impl Writer {
         self.change_color(self.fg_color, background);
     }
 
-    fn new_line(&mut self) {
+    fn new_line(&mut self) {    
         for row in 1..BUFFER_HEIGHT {
             for col in 0..BUFFER_WIDTH {
                 let character = self.buffer.chars[row][col].read();
@@ -129,14 +128,24 @@ impl Writer {
 
         self.clear_row(BUFFER_HEIGHT - 1);
         self.column_position = 0;
-    }  
+    }
+
+    fn backspace(&mut self) {
+        if self.column_position > 0 {
+            self.column_position -= 1;
+            self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position].write(ScreenChar {
+                ascii_character: b' ',
+                color_code: self.color_code,
+            });
+        }
+    }
 
     fn clear_row(&mut self, row: usize) {
         let blank = ScreenChar {
             ascii_character: b' ',
             color_code: self.color_code,
         };
-        for col in 0..BUFFER_WIDTH  {
+        for col in 0..BUFFER_WIDTH {
             self.buffer.chars[row][col].write(blank);
         }
     }
@@ -144,8 +153,11 @@ impl Writer {
     pub fn write_string(&mut self, s: &str) {
         for byte in s.bytes() {
             match byte {
-                // printable ASCII byte or newline
                 0x20..=0x7e | b'\n' => self.write_byte(byte),
+                // character is backspace
+                0x08 => self.backspace(),
+                // null terminator
+                0x00 => self.write_byte('_' as u8),
                 // not part of printable ASCII range
                 _ => self.write_byte(0xfe),
             }
@@ -161,7 +173,7 @@ impl fmt::Write for Writer {
 }
 
 lazy_static! {
-    pub static ref WRITER: Mutex<Writer>  = Mutex::new(Writer {
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
         fg_color: Color::White,
         bg_color: Color::Black,
@@ -170,11 +182,10 @@ lazy_static! {
     });
 }
 
-// print macros
-
+/// Prints a string to the vga output
 #[macro_export]
 macro_rules! print {
-    
+
     /*
      * I have no idea what it does, but it lets us print stuff.
      * Keeping it
@@ -182,9 +193,10 @@ macro_rules! print {
     ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
 }
 
+/// Prints a string with an automatic line ending to the vga output
 #[macro_export]
 macro_rules! println {
-    
+
     // Yeah, good luck trying to understand this
     () => ($crate::print!("\n"));
     ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)))
@@ -205,25 +217,25 @@ pub fn _print(args: fmt::Arguments) {
 #[macro_export]
 macro_rules! change_color {
     // Get foreground/background as expression-values and parse into vga_buffer::_change_color(...)
-    ($foreground:expr, $background:expr)=>{        
+    ($foreground:expr, $background:expr) => {
         $crate::vga_buffer::_change_color($foreground, $background);
-    }
+    };
 }
 
 // Macro to change foreground color
 #[macro_export]
 macro_rules! change_fg {
-    ($foreground:expr)=>{
+    ($foreground:expr) => {
         $crate::vga_buffer::_change_fg($foreground);
-    }
+    };
 }
 
-// Macro to change background color
 #[macro_export]
+/// Changes background color
 macro_rules! change_bg {
-    ($background:expr)=>{
+    ($background:expr) => {
         $crate::vga_buffer::_change_bg($background);
-    }
+    };
 }
 
 // Function for change_color!(...)
@@ -263,5 +275,11 @@ fn test_println_output() {
     for (i, c) in s.chars().enumerate() {
         let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
         assert_eq!(char::from(screen_char.ascii_character), c);
+    }
+}
+
+pub(crate) fn clear_screen() {
+    for _ in 0..BUFFER_HEIGHT {
+        println!();
     }
 }

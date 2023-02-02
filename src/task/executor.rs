@@ -8,7 +8,7 @@
 
 use super::{Task, TaskId};
 use alloc::{collections::BTreeMap, sync::Arc, task::Wake};
-use core::task::{Waker, Context, Poll};
+use core::{task::{Waker, Context, Poll}, borrow::BorrowMut};
 use crossbeam_queue::ArrayQueue;
 use x86_64::instructions::interrupts::{self, enable_and_hlt};
 

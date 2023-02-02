@@ -8,7 +8,7 @@
 
 use conquer_once::spin::{OnceCell};
 use crossbeam_queue::ArrayQueue;
-use crate::{print, println, change_fg, vga_buffer::Color};
+use crate::{print, println, change_fg, vga_buffer::Color, cmd};
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 use core::{pin::Pin, task::{Poll, Context}};
 use futures_util::{task::AtomicWaker, stream::{Stream, StreamExt}};
@@ -75,8 +75,25 @@ pub async fn print_keypresses() {
     while let Some(scancode) = scancodes.next().await {
         if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
             if let Some(key) = keyboard.process_keyevent(key_event) {
-                match key {
-                    DecodedKey::Unicode(character) => print!("{}", character),
+                let mut real_key = key;
+                
+                if cmd::is_active() {
+                    if key == DecodedKey::Unicode('\n') {
+                        cmd::process_command();
+                        real_key = DecodedKey::Unicode('\u{80}');
+                    } else {
+                        cmd::add_char(key);
+                    }
+                }
+
+                match real_key {
+                    DecodedKey::Unicode(character) => {
+                        if character == '\u{80}' {
+                            print!("{}", cmd::COMMAND_PREFIX);
+                        } else {
+                            print!("{}", character);
+                        }
+                    }
                     DecodedKey::RawKey(key) => print!("{:?}", key),
                 }
             }

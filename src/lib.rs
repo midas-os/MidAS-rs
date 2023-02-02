@@ -19,15 +19,14 @@
 extern crate alloc;
 
 pub mod allocator;
-
-mod qemu;
-mod serial;
-mod gdt;
-
+pub mod qemu;
+pub mod serial;
+pub mod gdt;
 pub mod task;
 pub mod vga_buffer;
 pub mod interrupts;
 pub mod memory;
+pub mod cmd;
 
 use core::panic::PanicInfo;
 

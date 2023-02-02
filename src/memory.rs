@@ -9,7 +9,7 @@
 use x86_64::{
     PhysAddr,
     VirtAddr,
-    structures::paging::{PageTable, OffsetPageTable, Size4KiB, page_table::FrameError, FrameAllocator, Page, PageTableFlags as Flags, PhysFrame, Mapper},
+    structures::paging::{PageTable, OffsetPageTable, Size4KiB, page_table::FrameError, FrameAllocator, Page, PageTableFlags as Flags, PhysFrame, Mapper, frame},
     registers::control::Cr3,
 };
 use bootloader::bootinfo::{MemoryRegionType, MemoryMap};
@@ -48,14 +48,6 @@ unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
         frame
     }
 }
-
-// pub struct EmptyFrameAllocator;
-
-// unsafe impl FrameAllocator<Size4KiB> for EmptyFrameAllocator {
-//     fn allocate_frame(&mut self) -> Option<PhysFrame<Size4KiB>> {
-//         None
-//     }
-// }
 
 unsafe fn active_level_4_table(physical_memory_offset: VirtAddr)
     -> &'static mut PageTable
@@ -120,4 +112,40 @@ pub fn create_example_mapping(
         mapper.map_to(page, frame, flags, frame_allocator)
     };
     map_to_result.expect("map_to failed").flush();
+}
+
+/***************************************
+* functions for easy allocation / paging
+***************************************/
+pub fn create_page(virt_addr: u64, mapper: &mut OffsetPageTable, frame_allocator: &mut impl FrameAllocator<Size4KiB>) -> Page {
+    let page = Page::containing_address(VirtAddr::new(virt_addr));
+    create_example_mapping(page, mapper, frame_allocator);
+
+    page
+}
+
+pub fn get_page_ptr(page: Page) -> *mut u64 {
+    page.start_address().as_mut_ptr()
+}
+
+pub fn write_page(page: Page, offset: isize, data: u8) {
+    let ptr: *mut u64 = get_page_ptr(page);
+    write_page_ptr(ptr, offset, data)
+}
+
+pub fn write_page_ptr(ptr: *mut u64, offset: isize, data: u8) {
+    unsafe {
+        ptr.offset(offset).write_bytes(data, data as usize);
+    }
+}
+
+pub fn write_page_vol(page: Page, offset: isize, data: u64) {
+    let ptr: *mut u64 = get_page_ptr(page);
+    write_page_vol_ptr(ptr, offset, data)
+}
+
+pub fn write_page_vol_ptr(ptr: *mut u64, offset: isize, data: u64) {
+    unsafe {
+        ptr.offset(offset).write_volatile(data);
+    }
 }
