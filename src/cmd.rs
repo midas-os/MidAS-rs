@@ -159,6 +159,7 @@ pub(crate) fn process_command() {
     ******************************/
     unsafe {
         COMMAND_LINE_BUFFER = [0; 512];
+        CURRENT_INDEX = 0;
     }
 }
 
