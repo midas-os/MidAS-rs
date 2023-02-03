@@ -1,12 +1,12 @@
 /**************************************************************************************************
 * Name : 									    cmd.rs
-* Author : 										Avery
+* Author : 									Avery & Midna
 * Date : 									  2/02/2023
 * Purpose :                       Command line interface for MidAS
 * Version : 									 0.1
 **************************************************************************************************/
 
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info};
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -77,10 +77,8 @@ pub fn init() {
 
     println!("Welcome to the command line interface!");
     print!("Type ");
-    
-    change_fg!(Color::LightGreen);
-    print!("'help'");
-    change_fg!(Color::White);
+
+    print_colored("\"help\"", Color::LightGreen);
 
     println!(" to see a list of commands");
 
@@ -187,52 +185,75 @@ fn rename_device(cmd: &mut String) {
     DEVICE_NAME.lock().push_str(args[0]);
 }
 
+fn print_midas() {
+    print_colored(OS_NAME, Color::Yellow);
+}
+
+fn print_colored(message: &str, color: Color) {
+    change_fg!(color);
+    print!("{}", message);
+    change_fg!(Color::White);
+}
+
 fn credits(_cmd: &mut String) {
     /************************************************************************************
      * Added credits because without the people here, it wouldn't even have been possible
         for me to even get a basic vga_buffer running.
         - Avery
     ************************************************************************************/
+    print_colored("\nMid", Color::Magenta);
+    print_colored("A", Color::LightCyan);
+    print_colored("S", Color::Yellow);
 
-    change_fg!(Color::LightGreen);
-    println!("MidAS was created by:");
-    change_fg!(Color::White);
-    println!("Avery - @MindlessSea on GitHub");
-    println!("Midna - @Midnight-Midna on GitHub");
 
-    change_fg!(Color::LightGreen);
+    println!(" was created by:");
+    print_colored("A", Color::Yellow);
+    print_colored("very", Color::LightCyan);
+
+    println!(" - @MindlessSea on GitHub");
+
+    print_colored("Mid", Color::Yellow);
+    print_colored("na", Color::Magenta);
+
+    println!(" - @Midnight-Midna on GitHub");
+
     println!("\nSpecial thanks to:");
-    change_fg!(Color::White);
 
     /************
     * RustOS team
     ************/
-    println!("The RustOS team - @rust-osdev on GitHub");
+    print_colored("The RustOS Team", Color::LightRed);
+
+    println!(" - @rust-osdev on GitHub");
     print!("for Developing RustOS libraries\n\n");
 
     /******************
     * Phillip Oppermann
     ******************/
-    println!("The Phillip Oppermann - @phil-opp on GitHub");
+    print_colored("Phillip Oppermann", Color::Blue);
+
+    println!(" - @phil-opp on GitHub");
     print!("for Developing the blog series \"Writing an OS in Rust\"\n\n");
 
     /**********
     * Jai/Aenri
     **********/
-    println!("Jai/Aenri - @jdadonut on GitHub");
+    print_colored("Jai/Aenri", Color::Pink);
+
+    println!(" - @jdadonut on GitHub");
     println!("for helping Avery out with fixing bugs");
     print!("(she made an OS called ");
 
-    change_fg!(Color::Pink);
-    print!("\"veil\"");
-    change_fg!(Color::White);
+    print_colored("\"veil\"", Color::Magenta);
 
-    println!(" go check it out!)\n\n");
+    println!(" go check it out!)\n");
 
     /**********
     * Rust Team
     **********/
-    println!("The Rust team - @rust-lang on GitHub");
+    print_colored("The Rust Team", Color::LightRed);
+
+    println!(" - @rust-lang on GitHub");
     print!("for developing Rust\n\n");
 }
 
@@ -281,7 +302,7 @@ fn print_based(_cmd: &mut String) {
     print!("N");
     change_fg!(Color::LightCyan);
     print!("S");
-    
+        
     change_fg!(Color::White);
     print!(" Rights are ");
 
@@ -301,7 +322,7 @@ fn print_based(_cmd: &mut String) {
 }
 
 fn version_info(_cmd: &mut String) {
-    print!("{}", os_info::OS_NAME);
+    print_midas();
     change_fg!(Color::LightCyan);
     println!(" v{}", os_info::VERSION);
     change_fg!(Color::White);
