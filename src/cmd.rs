@@ -93,6 +93,7 @@ pub fn init() {
 pub fn uninit() {
     unsafe {
         COMMAND_LINE_ACTIVE = false;
+        task::keyboard::INPUT_TARGET = task::keyboard::InputTarget::None;
     }
 }
 
