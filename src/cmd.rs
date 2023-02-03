@@ -6,7 +6,7 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}};
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -84,6 +84,7 @@ pub fn init() {
 
     unsafe {
         COMMAND_LINE_ACTIVE = true;
+        task::keyboard::INPUT_TARGET = task::keyboard::InputTarget::Terminal;
     }
 
     print!("{}", get_command_prefix());
