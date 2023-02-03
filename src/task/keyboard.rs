@@ -8,7 +8,7 @@
 
 use conquer_once::spin::{OnceCell};
 use crossbeam_queue::ArrayQueue;
-use crate::{print, println, change_fg, vga_buffer::Color, cmd};
+use crate::{print, println, change_fg, vga_buffer::Color, cmd, application::{self, Application}};
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1, KeyCode};
 use core::{pin::Pin, task::{Poll, Context}};
 use futures_util::{task::AtomicWaker, stream::{Stream, StreamExt}};
@@ -17,6 +17,7 @@ static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 static WAKER: AtomicWaker = AtomicWaker::new();
 
 pub static mut INPUT_TARGET: InputTarget = InputTarget::None;
+pub static mut APPLICATION: application::Application = Application::new_unrunnable("None");
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -103,11 +104,23 @@ pub async fn print_keypresses() {
             if let Some(key) = keyboard.process_keyevent(key_event) {
                 let mut real_key = key;
 
+                /************************************************************************
+                * Since there's no need for a keyboard, we can ignore all the key presses
+                ************************************************************************/
+                if unsafe { INPUT_TARGET == InputTarget::None } {
+                    continue;
+                }
+
                 if unsafe { INPUT_TARGET == InputTarget::Terminal } {
                     let (override_key, new_key) = cmd_keypress_override(key).await;
                     if override_key {
                         real_key = new_key;
                     }
+                }
+
+                if unsafe { INPUT_TARGET == InputTarget::Application } {
+                    unsafe { APPLICATION.keypress(key) };
+                    continue;
                 }
 
                 match real_key {

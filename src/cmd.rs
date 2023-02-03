@@ -6,7 +6,7 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task};
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -34,7 +34,7 @@ pub fn get_command_prefix() -> String {
 } 
 
 #[derive(Clone, Copy)]
-struct Command {
+pub struct Command {
     name: &'static str,
     description: &'static str,
     function: fn(&mut String),
@@ -54,7 +54,7 @@ pub fn is_active() -> bool {
     unsafe { COMMAND_LINE_ACTIVE }
 }
 
-fn add_command(command: Command) {
+pub fn add_command(command: Command) {
     let command = Box::leak(Box::new(command));
     COMMANDS.lock().push(command);
 }
@@ -84,7 +84,7 @@ pub fn init() {
 
     unsafe {
         COMMAND_LINE_ACTIVE = true;
-        task::keyboard::INPUT_TARGET = task::keyboard::InputTarget::Terminal;
+        keyboard::INPUT_TARGET = keyboard::InputTarget::Terminal;
     }
 
     print!("{}", get_command_prefix());
