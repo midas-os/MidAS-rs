@@ -119,7 +119,7 @@ pub async fn print_keypresses() {
                 }
 
                 if unsafe { INPUT_TARGET == InputTarget::Application } {
-                    unsafe { APPLICATION.keypress(key) };
+                    unsafe { APPLICATION.redirect_input(key) };
                     continue;
                 }
 
