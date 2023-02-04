@@ -61,17 +61,8 @@ pub fn add_command(command: Command) {
     COMMANDS.lock().push(command);
 }
 
-pub fn init() {
-    /***************************************************
-    * add commands to command list so they can be called
-    ***************************************************/
-    add_command(Command::new("help", "Show this help message", help));
-    add_command(Command::new("clear", "Clear the screen", clear));
-    add_command(Command::new("echo", "Echoes the input", echo));
-    add_command(Command::new("based", "Prints cool stuff", print_based));
-    add_command(Command::new("version", "Shows current Version", version_info));
-    add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
-    add_command(Command::new("credits", "Shows who worked on the OS!", credits));
+fn show_intro() {
+    clear_screen!();
 
     /**********************
     * print welcome message
@@ -100,6 +91,23 @@ o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'
         keyboard::INPUT_TARGET = keyboard::InputTarget::Terminal;
     }
     
+} 
+
+pub fn init() {
+    /***************************************************
+    * add commands to command list so they can be called
+    ***************************************************/
+    add_command(Command::new("help", "Show this help message", help));
+    add_command(Command::new("midas", "Shows the MidAS initialization screen.", cmd_show_intro));
+    add_command(Command::new("clear", "Clear the screen", clear));
+    add_command(Command::new("echo", "Echoes the input", echo));
+    add_command(Command::new("based", "Prints cool stuff", print_based));
+    add_command(Command::new("version", "Shows current Version", version_info));
+    add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
+    add_command(Command::new("credits", "Shows who worked on the OS!", credits));
+    
+    show_intro();
+
     print!("{}", get_command_prefix());
 }
 
@@ -186,6 +194,10 @@ fn help(_cmd: &mut String) {
     for cmd in COMMANDS.lock().iter() {
         println!("{} - {}", cmd.name, cmd.description);
     }
+}
+
+fn cmd_show_intro(_cmd: &mut String) {
+    show_intro();
 }
 
 fn rename_device(cmd: &mut String) {
@@ -283,7 +295,7 @@ fn echo(cmd: &mut String) {
 
     let mut text = String::new();
 
-    for arg in args.iter().skip(1) {
+    for arg in args.iter() {
         text.push_str(arg);
         text.push(' ');
     }

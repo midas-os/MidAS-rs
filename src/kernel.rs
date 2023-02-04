@@ -9,7 +9,7 @@
 extern crate alloc;
 
 use bootloader::BootInfo;
-use midas::{task::{executor::Executor, keyboard, Task}, cmd};
+use midas::{task::{executor::Executor, keyboard, Task}, cmd, asm};
 use crate::{memory::BootInfoFrameAllocator, println};
 use x86_64::{structures::paging::OffsetPageTable, VirtAddr};
 
@@ -35,6 +35,7 @@ pub fn main(
     phys_mem_offset: VirtAddr,
 ) {    
     println!("Boot successful!");
+    asm::test_asm();
     
     let mut executor = Executor::new();
     //executor.spawn(Task::new(example_task()));

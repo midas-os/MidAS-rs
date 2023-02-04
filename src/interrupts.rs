@@ -6,6 +6,8 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
+use core::arch::asm;
+
 use crate::{change_fg, gdt, hlt_loop, print, println, vga_buffer::Color};
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
@@ -45,7 +47,6 @@ lazy_static! {
         }
 
         idt[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_interrupt_handler);
-
         idt[InterruptIndex::Keyboard.as_usize()].set_handler_fn(keyboard_interrupt_handler);
 
         idt.page_fault.set_handler_fn(page_fault_handler);
