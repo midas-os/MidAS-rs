@@ -6,6 +6,8 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
+use core::arch::asm;
+
 use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
@@ -73,17 +75,20 @@ pub fn init() {
 
     /**********************
     * print welcome message
+    * ASCII Art from https://patorjk.com/software/taag/#p=display&f=Roman
     *********************/
-    print!("\nWelcome to \n\n");
-    print_colored("\
+    print!("\nWelcome to \n");
+    print_colored(r#"
+ooo        ooooo  o8o        .o8        .o.        .oooooo..o 
+`88.       .888'  `"'       "888       .888.      d8P'    `Y8 
+ 888b     d'888  oooo   .oooo888      .8"888.     Y88bo.      
+ 8 Y88. .P  888  `888  d88' `888     .8' `888.     `"Y8888o.  
+ 8  `888'   888   888  888   888    .88ooo8888.        `"Y88b 
+ 8    Y     888   888  888   888   .8'     `888.  oo     .d8P 
+o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'
 
-ooo        ooooo  o8o        .o8        .o.        .oooooo..o
-`88.       .888'  `\"'       \"888       .888.      d8P'    `Y8
- 888b     d'888  oooo   .oooo888      .8\"888.     Y88bo.
- 8 Y88. .P  888  `888  d88' `888     .8' `888.     `\"Y8888o.
- 8  `888'   888   888  888   888    .88ooo8888.        `\"Y88b
- 8    Y     888   888  888   888   .8'     `888.  oo     .d8P
-o8o        o888o o888o `Y8bod88P\" o88o     o8888o 8\"\"88888P'\n\n", Color::Yellow);
+"#, Color::Yellow);
+
     print!("Type ");
 
     print_colored("\"help\"", Color::LightGreen);
@@ -94,7 +99,7 @@ o8o        o888o o888o `Y8bod88P\" o88o     o8888o 8\"\"88888P'\n\n", Color::Yel
         COMMAND_LINE_ACTIVE = true;
         keyboard::INPUT_TARGET = keyboard::InputTarget::Terminal;
     }
-
+    
     print!("{}", get_command_prefix());
 }
 
@@ -333,11 +338,25 @@ fn print_based(_cmd: &mut String) {
 }
 
 fn version_info(_cmd: &mut String) {
-    print_midas();
-    change_fg!(Color::LightCyan);
-    println!(" v{}", os_info::VERSION);
-    change_fg!(Color::White);
-}
+    print_colored(r#"
+ooo        ooooo  o8o        .o8        .o.        .oooooo..o 
+`88.       .888'  `"'       "888       .888.      d8P'    `Y8 
+ 888b     d'888  oooo   .oooo888      .8"888.     Y88bo.      
+ 8 Y88. .P  888  `888  d88' `888     .8' `888.     `"Y8888o.  
+ 8  `888'   888   888  888   888    .88ooo8888.        `"Y88b 
+ 8    Y     888   888  888   888   .8'     `888.  oo     .d8P 
+o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'  
+"#, Color::Yellow);    
+
+    print_colored(r#"
+              .oooo.         .o  
+             d8P'`Y8b      o888  
+oooo    ooo 888    888      888  
+ `88.  .8'  888    888      888  
+  `88..8'   888    888      888  
+   `888'    `88b  d88' .o.  888  
+    `8'      `Y8bd8P'  Y8P o888o 
+    "#, Color::LightBlue);}
 
 pub(crate) fn add_char(key: pc_keyboard::DecodedKey) {
     let mut buffer = unsafe { &mut COMMAND_LINE_BUFFER };
