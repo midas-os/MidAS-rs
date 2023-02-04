@@ -34,9 +34,8 @@ pub fn main(
     frame_allocator: &mut BootInfoFrameAllocator,
     phys_mem_offset: VirtAddr,
 ) {    
-    println!("{} v{}", OS_NAME, VERSION);
     println!("Boot successful!");
-
+    
     let mut executor = Executor::new();
     //executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));

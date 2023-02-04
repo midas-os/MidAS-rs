@@ -8,13 +8,24 @@
 
 use conquer_once::spin::{OnceCell};
 use crossbeam_queue::ArrayQueue;
-use crate::{print, println, change_fg, vga_buffer::Color, cmd};
+use crate::{print, println, change_fg, vga_buffer::Color, cmd, application::{self, Application}};
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1, KeyCode};
 use core::{pin::Pin, task::{Poll, Context}};
 use futures_util::{task::AtomicWaker, stream::{Stream, StreamExt}};
 
 static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 static WAKER: AtomicWaker = AtomicWaker::new();
+
+pub static mut INPUT_TARGET: InputTarget = InputTarget::None;
+pub static mut APPLICATION: application::Application = Application::new_unrunnable("None");
+
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InputTarget {
+    None,
+    Terminal,
+    Application,
+}
 
 pub struct ScancodeStream {
     _private: (),
@@ -67,6 +78,22 @@ pub(crate) fn add_scancode(scancode: u8) {
     }
 }
 
+async fn cmd_keypress_override(key: DecodedKey) -> (bool, DecodedKey) {
+    let mut real_key = key;
+    
+    if key == DecodedKey::Unicode('\n') {
+        cmd::process_command();
+        real_key = DecodedKey::Unicode('\u{80}');
+    } else if key == DecodedKey::Unicode('\u{08}') {
+        cmd::backspace();
+        return (false, real_key);
+    } else {
+        cmd::add_char(key);
+    }
+
+    (true, real_key)
+}
+
 pub async fn print_keypresses() {
     let mut scancodes = ScancodeStream::new();
     let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1,
@@ -76,17 +103,24 @@ pub async fn print_keypresses() {
         if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
             if let Some(key) = keyboard.process_keyevent(key_event) {
                 let mut real_key = key;
-                
-                if cmd::is_active() {
-                    if key == DecodedKey::Unicode('\n') {
-                        cmd::process_command();
-                        real_key = DecodedKey::Unicode('\u{80}');
-                    } else if key == DecodedKey::Unicode('\u{08}') {
-                        cmd::backspace();
-                        continue;
-                    } else {
-                        cmd::add_char(key);
+
+                /************************************************************************
+                * Since there's no need for a keyboard, we can ignore all the key presses
+                ************************************************************************/
+                if unsafe { INPUT_TARGET == InputTarget::None } {
+                    continue;
+                }
+
+                if unsafe { INPUT_TARGET == InputTarget::Terminal } {
+                    let (override_key, new_key) = cmd_keypress_override(key).await;
+                    if override_key {
+                        real_key = new_key;
                     }
+                }
+
+                if unsafe { INPUT_TARGET == InputTarget::Application } {
+                    unsafe { APPLICATION.redirect_input(key) };
+                    continue;
                 }
 
                 match real_key {
@@ -99,25 +133,8 @@ pub async fn print_keypresses() {
                             print!("{}", character);
                         }
                     }
-                    DecodedKey::RawKey(key) => {
-                        let key_u8 = key as u8;
 
-                        /************************************
-                        * Check if key is between 0x0 and 0x5
-                        ************************************/
-                        for i in 0x0..=0x5 {
-                            if key_u8 == i {
-                                continue;
-                            }
-                        }
-
-                        /************************************
-                        * Check if key is 0x21, 0x40, or 0x41
-                        ************************************/
-                        if key_u8 == 0x21 || key_u8 == 0x40 || key_u8 == 0x41 {
-                            continue;
-                        }
-                    }
+                    DecodedKey::RawKey(key) => { }
                 }
             }
         }

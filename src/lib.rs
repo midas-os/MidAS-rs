@@ -28,6 +28,7 @@ pub mod interrupts;
 pub mod memory;
 pub mod cmd;
 pub mod os_info;
+pub mod application;
 
 use core::panic::PanicInfo;
 
