@@ -74,8 +74,16 @@ pub fn init() {
     /**********************
     * print welcome message
     *********************/
+    print!("\nWelcome to \n\n");
+    print_colored("\
 
-    println!("Welcome to the command line interface!");
+ooo        ooooo  o8o        .o8        .o.        .oooooo..o
+`88.       .888'  `\"'       \"888       .888.      d8P'    `Y8
+ 888b     d'888  oooo   .oooo888      .8\"888.     Y88bo.
+ 8 Y88. .P  888  `888  d88' `888     .8' `888.     `\"Y8888o.
+ 8  `888'   888   888  888   888    .88ooo8888.        `\"Y88b
+ 8    Y     888   888  888   888   .8'     `888.  oo     .d8P
+o8o        o888o o888o `Y8bod88P\" o88o     o8888o 8\"\"88888P'\n\n", Color::Yellow);
     print!("Type ");
 
     print_colored("\"help\"", Color::LightGreen);
