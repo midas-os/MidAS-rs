@@ -213,10 +213,6 @@ fn rename_device(cmd: &mut String) {
     DEVICE_NAME.lock().push_str(args[0]);
 }
 
-fn print_midas() {
-    print_colored(OS_NAME, Color::Yellow);
-}
-
 fn print_colored(message: &str, color: Color) {
     change_fg!(color);
     print!("{}", message);
@@ -282,7 +278,17 @@ fn credits(_cmd: &mut String) {
     print_colored("The Rust Team", Color::LightRed);
 
     println!(" - @rust-lang on GitHub");
-    print!("for developing Rust\n\n");
+    println!("for developing Rust\n");
+
+    /*******
+    * OSDev 
+    *******/
+    print_colored("The OSDev community", Color::LightBlue);
+
+    println!(" - https://wiki.osdev.org");
+    print!("for being an awesome way to learn OS Development!\n\n");
+
+    // TODO: Update credits
 }
 
 fn echo(cmd: &mut String) {
