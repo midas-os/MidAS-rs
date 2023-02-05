@@ -9,7 +9,7 @@
   <hr>
   <h1>Welcome to MidAS!</h1>
     <p>MidAS is a hobby operating system written in <a href="https://www.rust-lang.org/">Rust</a></p>
-  <img src="github/command_line.gif" width=350>  
+  <img src="github/command_line.gif" width=600>  
 
   <h1>How to run</h1>
   <h2> Requirements:</h2>

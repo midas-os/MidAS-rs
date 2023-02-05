@@ -61,17 +61,8 @@ pub fn add_command(command: Command) {
     COMMANDS.lock().push(command);
 }
 
-pub fn init() {
-    /***************************************************
-    * add commands to command list so they can be called
-    ***************************************************/
-    add_command(Command::new("help", "Show this help message", help));
-    add_command(Command::new("clear", "Clear the screen", clear));
-    add_command(Command::new("echo", "Echoes the input", echo));
-    add_command(Command::new("based", "Prints cool stuff", print_based));
-    add_command(Command::new("version", "Shows current Version", version_info));
-    add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
-    add_command(Command::new("credits", "Shows who worked on the OS!", credits));
+fn show_intro() {
+    clear_screen!();
 
     /**********************
     * print welcome message
@@ -100,6 +91,23 @@ o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'
         keyboard::INPUT_TARGET = keyboard::InputTarget::Terminal;
     }
     
+} 
+
+pub fn init() {
+    /***************************************************
+    * add commands to command list so they can be called
+    ***************************************************/
+    add_command(Command::new("help", "Show this help message", help));
+    add_command(Command::new("midas", "Shows the MidAS initialization screen.", cmd_show_intro));
+    add_command(Command::new("clear", "Clear the screen", clear));
+    add_command(Command::new("echo", "Echoes the input", echo));
+    add_command(Command::new("based", "Prints cool stuff", print_based));
+    add_command(Command::new("version", "Shows current Version", version_info));
+    add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
+    add_command(Command::new("credits", "Shows who worked on the OS!", credits));
+    
+    show_intro();
+
     print!("{}", get_command_prefix());
 }
 
@@ -188,6 +196,10 @@ fn help(_cmd: &mut String) {
     }
 }
 
+fn cmd_show_intro(_cmd: &mut String) {
+    show_intro();
+}
+
 fn rename_device(cmd: &mut String) {
     let args = cmd.split(' ').collect::<Vec<&str>>();
 
@@ -199,10 +211,6 @@ fn rename_device(cmd: &mut String) {
     println!("Renaming device to \"{}\"", args[0]);
     DEVICE_NAME.lock().clear();
     DEVICE_NAME.lock().push_str(args[0]);
-}
-
-fn print_midas() {
-    print_colored(OS_NAME, Color::Yellow);
 }
 
 fn print_colored(message: &str, color: Color) {
@@ -270,7 +278,17 @@ fn credits(_cmd: &mut String) {
     print_colored("The Rust Team", Color::LightRed);
 
     println!(" - @rust-lang on GitHub");
-    print!("for developing Rust\n\n");
+    println!("for developing Rust\n");
+
+    /*******
+    * OSDev 
+    *******/
+    print_colored("The OSDev community", Color::LightBlue);
+
+    println!(" - https://wiki.osdev.org");
+    print!("for being an awesome way to learn OS Development!\n\n");
+
+    // TODO: Update credits
 }
 
 fn echo(cmd: &mut String) {
@@ -283,7 +301,7 @@ fn echo(cmd: &mut String) {
 
     let mut text = String::new();
 
-    for arg in args.iter().skip(1) {
+    for arg in args.iter() {
         text.push_str(arg);
         text.push(' ');
     }

@@ -29,6 +29,7 @@ pub mod memory;
 pub mod cmd;
 pub mod os_info;
 pub mod application;
+pub mod asm;
 
 use core::panic::PanicInfo;
 
