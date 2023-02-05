@@ -1,0 +1,115 @@
+/* import ./fonts/vga.ttf */
+@font-face {
+    font-family: 'VGA';
+    src: url('./fonts/vga.ttf');
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'VGA', sans-serif;
+
+    user-select: none;
+}
+
+img {
+    /* make image scale with page */
+    max-width: 100%;
+    max-height: 100%;
+}
+
+p {
+    font-size: 1.5em;
+}
+
+a {
+    color: #ba00fb;
+    text-decoration: none;
+}
+
+.center {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+}
+
+.horizontal {
+    display: flex;
+    flex-direction: row;
+}
+
+.vertical {
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal {
+    background-color: #000;
+    color: #fff;
+    font-family: 'VGA', sans-serif;
+    font-size: 1em;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    border: 1px solid #fff;
+
+    /* change the vertical gap between elements */
+    line-height: 1.5em;
+}
+
+.titlebar {
+    display: flex;
+
+    background-color: #fff;
+    min-height: 10px;
+    color: #000;
+
+    /* padding */
+    padding: 5px;
+    border-radius: 10px 10px 0 0;
+
+    justify-content: left;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    gap: 5px;
+    padding-right: 20px;
+}
+
+.button {
+    padding: 5px;
+    min-width: 10px;
+    max-width: 10px;
+    min-height: 10px;
+    max-height: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 20px;
+    color: transparent;
+
+    border-radius: 100px;
+}
+
+.red {
+    background-color: #ff0000;
+    border: 1px solid #9f0000;
+}
+
+.yellow {
+    background-color: #ffff00;
+    border: 1px solid #9f9f00;
+}
+
+.green {
+    background-color: #00ff00;
+    border: 1px solid #009f00;
+}
