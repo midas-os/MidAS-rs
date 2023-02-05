@@ -24,7 +24,7 @@
     <li><code>cargo run</code></li>
   </ul>
   
-  <p>If anything goes wrong, feel free to create an <a href="https://github.com/MindlessSea/MidAS/issues/new">issue</a>!</p>
+  <p>If anything goes wrong, feel free to create an <a href="https://github.com/MindlessSea/MidAS/issues/new/choose">issue</a>!</p>
 
   <h1>Resources</h1>
   <ul>
