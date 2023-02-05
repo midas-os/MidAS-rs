@@ -1,5 +1,5 @@
 /**************************************************************************************************
-* Name : 									   main.rs
+* Name : 									   gdt.rs
 * Author : 										Avery
 * Date : 									  1/28/2023
 * Purpose : 			   GlobalDescriptorTable to manage DoubleFaults

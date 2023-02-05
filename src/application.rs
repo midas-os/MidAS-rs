@@ -1,3 +1,11 @@
+/**************************************************************************************************
+* Name : 									application.rs
+* Author : 										Avery
+* Date : 									  2/02/2023
+* Purpose : 					          Application struct
+* Version : 									 0.1
+**************************************************************************************************/
+
 use pc_keyboard::DecodedKey;
 use crate::task::keyboard::{self};
 
