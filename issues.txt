@@ -9,5 +9,8 @@
 Problems:
 1. (most) tests don't work
 
+WIP:
+1. VGA Graphics Mode (note to self: Address is probably 0x8000)
+
 Planned Additions:
 1. Anti-Transphobia system
