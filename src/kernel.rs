@@ -38,8 +38,12 @@ pub fn main(
     asm::test_asm();
     
     let mut executor = Executor::new();
-    //executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));
+
+    /*************
+    * VGA Graphics
+    *************/
+    unsafe { vga_driver::init(); }
 
     /*************
     * Command line

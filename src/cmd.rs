@@ -6,8 +6,6 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use core::arch::asm;
-
 use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}, application::Application, vga_driver};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
@@ -22,7 +20,7 @@ static mut COMMAND_LINE_BUFFER: [u8; 512] = [0; 512];
 static mut CURRENT_INDEX: u16 = 0;
 
 lazy_static! {
-    static ref DEVICE_NAME: Mutex<String> = Mutex::new("qemu".to_string());
+    pub static ref DEVICE_NAME: Mutex<String> = Mutex::new("qemu".to_string());
 }
 
 pub fn get_command_prefix() -> String {
@@ -220,7 +218,7 @@ fn vga_graphics(_cmd: &mut String) {
         keyboard::INPUT_TARGET = keyboard::InputTarget::GraphicMode;
     }
     
-    vga_driver::init();
+    vga_driver::start();
 }
 
 fn print_colored(message: &str, color: Color) {
