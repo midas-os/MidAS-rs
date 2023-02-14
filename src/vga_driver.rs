@@ -2,7 +2,7 @@
 * Name : 									vga_driver.rs
 * Author : 										Avery
 * Date : 									  2/14/2023
-* Purpose :                            VGA Driver for Graphics Mode
+* Purpose :                           VGA Driver for Graphics Mode
 * Version : 									 0.1
 **************************************************************************************************/
 
