@@ -9,7 +9,7 @@
 use alloc::boxed::Box;
 use conquer_once::spin::{OnceCell};
 use crossbeam_queue::ArrayQueue;
-use crate::{print, println, change_fg, vga_buffer::Color, cmd, application::{self, Application}};
+use crate::{print, println, change_fg, vga_buffer::Color, cmd, application::{self, Application}, vga_driver};
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1, KeyCode};
 use core::{pin::Pin, task::{Poll, Context}};
 use futures_util::{task::AtomicWaker, stream::{Stream, StreamExt}};
@@ -26,6 +26,7 @@ pub enum InputTarget {
     None,
     Terminal,
     Application,
+    GraphicMode
 }
 
 pub struct ScancodeStream {
@@ -95,6 +96,11 @@ async fn cmd_keypress_override(key: DecodedKey) -> (bool, DecodedKey) {
     (true, real_key)
 }
 
+async fn graphics_keypress_override(key: DecodedKey) -> (bool, DecodedKey) {
+    vga_driver::register_key(key);
+    (true, key)
+}
+
 pub async fn print_keypresses() {
     let mut scancodes = ScancodeStream::new();
     let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1,
@@ -109,6 +115,11 @@ pub async fn print_keypresses() {
                 * Since there's no need for a keyboard, we can ignore all the key presses
                 ************************************************************************/
                 if unsafe { INPUT_TARGET == InputTarget::None } {
+                    continue;
+                }
+
+                if unsafe { INPUT_TARGET == InputTarget::GraphicMode } {
+                    graphics_keypress_override(key).await;
                     continue;
                 }
 

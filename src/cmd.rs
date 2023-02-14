@@ -215,6 +215,11 @@ fn rename_device(cmd: &mut String) {
 }
 
 fn vga_graphics(_cmd: &mut String) {
+    unsafe {
+        COMMAND_LINE_ACTIVE = false;
+        keyboard::INPUT_TARGET = keyboard::InputTarget::GraphicMode;
+    }
+    
     vga_driver::init();
 }
 
