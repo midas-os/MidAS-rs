@@ -6,6 +6,7 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
+use alloc::boxed::Box;
 use conquer_once::spin::{OnceCell};
 use crossbeam_queue::ArrayQueue;
 use crate::{print, println, change_fg, vga_buffer::Color, cmd, application::{self, Application}};
@@ -17,7 +18,7 @@ static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 static WAKER: AtomicWaker = AtomicWaker::new();
 
 pub static mut INPUT_TARGET: InputTarget = InputTarget::None;
-pub static mut APPLICATION: application::Application = Application::new_unrunnable("None");
+pub static mut APPLICATION: Application = Application::new_unrunnable("None");
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

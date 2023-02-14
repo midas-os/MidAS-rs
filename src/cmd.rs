@@ -8,7 +8,7 @@
 
 use core::arch::asm;
 
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}};
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}, application::Application, vga_driver};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -105,6 +105,7 @@ pub fn init() {
     add_command(Command::new("version", "Shows current Version", version_info));
     add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
     add_command(Command::new("credits", "Shows who worked on the OS!", credits));
+    add_command(Command::new("vga", "Enables VGA Graphics Mode", vga_graphics));
     
     show_intro();
 
@@ -213,6 +214,10 @@ fn rename_device(cmd: &mut String) {
     DEVICE_NAME.lock().push_str(args[0]);
 }
 
+fn vga_graphics(_cmd: &mut String) {
+    vga_driver::init();
+}
+
 fn print_colored(message: &str, color: Color) {
     change_fg!(color);
     print!("{}", message);
@@ -289,6 +294,21 @@ fn credits(_cmd: &mut String) {
     print!("for being an awesome way to learn OS Development!\n\n");
 
     // TODO: Update credits
+    
+}
+
+fn run(cmd: &mut String) {
+    let args = cmd.split(' ').collect::<Vec<&str>>();
+
+    if args.len() == 1 {
+        println!("Usage: run <file>");
+        return;
+    }
+
+    if args[0] == "elden_ring" {
+        println!("Yes, it can.");
+        return;
+    }
 }
 
 fn echo(cmd: &mut String) {
