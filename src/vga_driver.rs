@@ -8,7 +8,8 @@
 
 
 use alloc::{string::ToString, format, vec::Vec};
-use midas_vga::graphics::{calculate_centered_rect, draw_rect, write_str_centered_x, draw_centered_rect};
+use midas_vga::graphics::{draw_rect, write_str_centered_x, draw_centered_rect, to_usize};
+use midas_vga::math::calculate_centered_rect;
 use pc_keyboard::{DecodedKey, KeyCode};
 use spin::Mutex;
 use vga::{colors::{Color16}, writers::{Graphics640x480x16, GraphicsWriter, Text80x25, TextWriter}, drawing::Point};
@@ -66,8 +67,8 @@ fn main_page() {
     let box_start = calculate_centered_rect(box_size);
     let box_end = (box_start.0 + box_size.0, box_start.1 + box_size.1);
 
-    let box_start_u = (box_start.0 as usize, box_start.1 as usize);
-    let box_end_u = (box_end.0 as usize, box_end.1 as usize);
+    let box_start_u = to_usize(box_start);
+    let box_end_u = to_usize(box_end);
 
     draw_rect(box_start, box_size, Color16::White);
     write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "MidAS Graphical User Interface (GUI)", Color16::White);
@@ -82,8 +83,8 @@ fn device_info_page() {
     let box_start = calculate_centered_rect(box_size);
     let box_end = (box_start.0 + box_size.0, box_start.1 + box_size.1);
 
-    let box_start_u = (box_start.0 as usize, box_start.1 as usize);
-    let box_end_u = (box_end.0 as usize, box_end.1 as usize);
+    let box_start_u = to_usize(box_start);
+    let box_end_u = to_usize(box_end);
 
     draw_centered_rect((550, 400), Color16::White);
     write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "Device Information", Color16::White);
