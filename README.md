@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="https://img.shields.io/github/last-commit/mindlesssea/midas?style=for-the-badge&color=yellow"/>
-  <img src="https://img.shields.io/github/issues/mindlesssea/midas?style=for-the-badge&color=d41c43"/>
-  <img src="https://img.shields.io/github/issues-pr/mindlesssea/midas?style=for-the-badge&color=brightgreen"/>
+  <img src="https://img.shields.io/github/last-commit/midas-os/midas?style=for-the-badge&color=yellow"/>
+  <img src="https://img.shields.io/github/issues/midas-os/midas?style=for-the-badge&color=d41c43"/>
+  <img src="https://img.shields.io/github/issues-pr/midas-os/midas?style=for-the-badge&color=brightgreen"/>
   <div width=100%></div>
-  <img src="https://img.shields.io/github/license/mindlesssea/midas?style=for-the-badge&color=brightgreen"/>
-  <img src="https://img.shields.io/github/languages/code-size/mindlesssea/midas?style=for-the-badge&color=blue"/>
-  <img src="https://img.shields.io/github/languages/top/mindlesssea/midas?style=for-the-badge&color=f66700"/>
+  <img src="https://img.shields.io/github/license/midas-os/midas?style=for-the-badge&color=brightgreen"/>
+  <img src="https://img.shields.io/github/languages/code-size/midas-os/midas?style=for-the-badge&color=blue"/>
+  <img src="https://img.shields.io/github/languages/top/midas-os/midas?style=for-the-badge&color=f66700"/>
   <hr>
   <h1>Welcome to MidAS!</h1>
     <p>MidAS is a hobby operating system written in <a href="https://www.rust-lang.org/">Rust</a></p>
@@ -24,7 +24,7 @@
     <li><code>cargo run</code></li>
   </ul>
   
-  <p>If anything goes wrong, feel free to create an <a href="https://github.com/MindlessSea/MidAS/issues/new/choose">issue</a>!</p>
+  <p>If anything goes wrong, feel free to create an <a href="https://github.com/midas-os/MidAS/issues/new/choose">issue</a>!</p>
 
   <h1>Resources</h1>
   <ul>
