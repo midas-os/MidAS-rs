@@ -108,6 +108,7 @@ fn device_info_page() {
 pub unsafe fn init() {
     add_page(Page::new(main_page));
     add_page(Page::new(device_info_page));
+    add_page(Page::new(my_page));
     CURRENT_PAGE = 0;
 }
 
@@ -174,21 +175,30 @@ pub fn calculate_centered_rect(size: Point<isize>) -> Point<isize> {
 }
 
 pub fn write_str_centered(bounds_start: Point<usize>, bounds_end: Point<usize>, string: &str, color: Color16) {
-    let string_width = string.len() * 8;
-    let string_height = 16;
+    let lines = string.split('\n');
 
-    let x = (bounds_start.0 + bounds_end.0) / 2 - string_width / 2;
-    let y = (bounds_start.1 + bounds_end.1) / 2 - string_height / 2;
+    for (offset, line) in lines.enumerate() {
+        let string_width = line.len() * 8;
+        let string_height = 16;
 
-    write_string((x, y), string, color);
+        let x = (bounds_start.0 + bounds_end.0) / 2 - string_width / 2;
+        let y = (bounds_start.1 + bounds_end.1) / 2 - string_height / 2;
+
+        write_string((x, y + (offset * 10)), line, color);
+    }
 }
 
 pub fn write_str_centered_x(bounds_start: Point<usize>, bounds_end: Point<usize>, y: usize, string: &str, color: Color16) {
-    let string_width = string.len() * 8;
+    // split string into new lines
+    let lines = string.split('\n');
 
-    let x = (bounds_start.0 + bounds_end.0) / 2 - string_width / 2;
+    for (offset, line) in lines.enumerate() {
+        let string_width = line.len() * 8;
 
-    write_string((x, y), string, color);
+        let x = (bounds_start.0 + bounds_end.0) / 2 - string_width / 2;
+
+        write_string((x, y + (offset * 10)), line, color);
+    }
 }
 
 pub fn write_str_centered_y(bounds_start: Point<usize>, bounds_end: Point<usize>, x: usize, string: &str, color: Color16) {
