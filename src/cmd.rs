@@ -6,8 +6,6 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use core::arch::asm;
-
 use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}, application::Application, vga_driver};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
@@ -22,7 +20,7 @@ static mut COMMAND_LINE_BUFFER: [u8; 512] = [0; 512];
 static mut CURRENT_INDEX: u16 = 0;
 
 lazy_static! {
-    static ref DEVICE_NAME: Mutex<String> = Mutex::new("qemu".to_string());
+    pub static ref DEVICE_NAME: Mutex<String> = Mutex::new("qemu".to_string());
 }
 
 pub fn get_command_prefix() -> String {
@@ -61,7 +59,7 @@ pub fn add_command(command: Command) {
     COMMANDS.lock().push(command);
 }
 
-fn show_intro() {
+pub fn show_intro() {
     clear_screen!();
 
     /**********************
@@ -90,6 +88,8 @@ o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'
         COMMAND_LINE_ACTIVE = true;
         keyboard::INPUT_TARGET = keyboard::InputTarget::Terminal;
     }
+
+    print!("{}", get_command_prefix());
     
 } 
 
@@ -108,8 +108,6 @@ pub fn init() {
     add_command(Command::new("vga", "Enables VGA Graphics Mode", vga_graphics));
     
     show_intro();
-
-    print!("{}", get_command_prefix());
 }
 
 pub fn uninit() {
@@ -215,7 +213,12 @@ fn rename_device(cmd: &mut String) {
 }
 
 fn vga_graphics(_cmd: &mut String) {
-    vga_driver::init();
+    unsafe {
+        COMMAND_LINE_ACTIVE = false;
+        keyboard::INPUT_TARGET = keyboard::InputTarget::GraphicMode;
+    }
+    
+    vga_driver::start();
 }
 
 fn print_colored(message: &str, color: Color) {
