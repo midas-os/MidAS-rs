@@ -108,7 +108,6 @@ fn device_info_page() {
 pub unsafe fn init() {
     add_page(Page::new(main_page));
     add_page(Page::new(device_info_page));
-    add_page(Page::new(my_page));
     CURRENT_PAGE = 0;
 }
 
