@@ -84,7 +84,7 @@ fn device_info_page() {
     let box_start_u = (box_start.0 as usize, box_start.1 as usize);
     let box_end_u = (box_end.0 as usize, box_end.1 as usize);
 
-    draw_centered_rect((550, 300), Color16::White);
+    draw_centered_rect((550, 400), Color16::White);
     write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "Device Information", Color16::White);
 
     let device_name = format!("Device Name: {}", cmd::DEVICE_NAME.lock().as_str());
@@ -255,7 +255,7 @@ pub fn register_key(key: DecodedKey) {
                 text_mode.set_mode();
                 text_mode.clear_screen();
                 
-                cmd::init();
+                cmd::show_intro();
         
                 return;
             }

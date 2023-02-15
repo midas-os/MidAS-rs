@@ -59,7 +59,7 @@ pub fn add_command(command: Command) {
     COMMANDS.lock().push(command);
 }
 
-fn show_intro() {
+pub fn show_intro() {
     clear_screen!();
 
     /**********************
@@ -88,6 +88,8 @@ o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'
         COMMAND_LINE_ACTIVE = true;
         keyboard::INPUT_TARGET = keyboard::InputTarget::Terminal;
     }
+
+    print!("{}", get_command_prefix());
     
 } 
 
@@ -106,8 +108,6 @@ pub fn init() {
     add_command(Command::new("vga", "Enables VGA Graphics Mode", vga_graphics));
     
     show_intro();
-
-    print!("{}", get_command_prefix());
 }
 
 pub fn uninit() {
