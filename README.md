@@ -21,6 +21,7 @@
     <li>Make sure <i>qemu</i> is added to your <i>path</i></li>
     <li>Make sure <i>rust</i> is installed (run <code>rustc --version</code>)</li>
     <li>Add <i>llvm-tools-preview</i> with <code>rustup component add llvm-tools-preview</code></li>
+    <li><code>cargo install bootimage</code></li>
     <li><code>cargo run</code></li>
   </ul>
   
