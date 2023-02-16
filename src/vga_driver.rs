@@ -8,7 +8,8 @@
 
 
 use alloc::{string::ToString, format, vec::Vec};
-use midas_vga::graphics::{draw_rect, write_str_centered_x, draw_centered_rect, to_usize};
+use midas_vga::graphics::{draw_shape, write_str_centered_x, to_usize};
+use midas_vga::shapes::*;
 use midas_vga::math::calculate_centered_rect;
 use pc_keyboard::{DecodedKey, KeyCode};
 use spin::Mutex;
@@ -70,7 +71,9 @@ fn main_page() {
     let box_start_u = to_usize(box_start);
     let box_end_u = to_usize(box_end);
 
-    draw_rect(box_start, box_size, Color16::White);
+    let rect = Shape::rectangle(box_start, box_end);
+    draw_shape(&rect, Color16::White);
+
     write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "MidAS Graphical User Interface (GUI)", Color16::White);
 
     write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 20, "Use the Left and Right Arrow keys to change the background color", Color16::White);
@@ -86,7 +89,9 @@ fn device_info_page() {
     let box_start_u = to_usize(box_start);
     let box_end_u = to_usize(box_end);
 
-    draw_centered_rect((550, 400), Color16::White);
+    let rect = Shape::rectangle(box_start, box_end);
+    draw_shape(&rect, Color16::White);
+
     write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "Device Information", Color16::White);
 
     let device_name = format!("Device Name: {}", cmd::DEVICE_NAME.lock().as_str());
