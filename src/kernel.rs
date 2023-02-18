@@ -9,7 +9,7 @@
 extern crate alloc;
 
 use bootloader::BootInfo;
-use midas::{task::{executor::Executor, keyboard, Task}, cmd, asm, vga_driver};
+use midas::{task::{executor::Executor, keyboard, Task}, cmd, asm, vga_driver, interrupts::{self, INTERRUPT_COUNT}, random};
 use crate::{memory::BootInfoFrameAllocator, println};
 use x86_64::{structures::paging::OffsetPageTable, VirtAddr};
 

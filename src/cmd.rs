@@ -6,7 +6,7 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}, application::Application, vga_driver};
+use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}, application::Application, vga_driver, asm, random};
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -106,6 +106,9 @@ pub fn init() {
     add_command(Command::new("rdvc", "Lets you change the name of the current device", rename_device));
     add_command(Command::new("credits", "Shows who worked on the OS!", credits));
     add_command(Command::new("vga", "Enables VGA Graphics Mode", vga_graphics));
+    add_command(Command::new("tfrst", "Triple Fault Reset (MAY CORRUPT HARDWARE)", triple_fault_reset));
+    add_command(Command::new("rnd", "Generates a random number", generate_rnd));
+    add_command(Command::new("rndrg", "Generates a random number in a range", generate_rnd_range));
     
     show_intro();
 }
@@ -199,6 +202,25 @@ fn cmd_show_intro(_cmd: &mut String) {
     show_intro();
 }
 
+fn generate_rnd(_cmd: &mut String) {
+    println!("Random number (0, 1): {}", random::generate_rnd_01());
+    println!("Random number: {}", random::generate_rnd());
+}
+
+fn generate_rnd_range(cmd: &mut String) {
+    let args = cmd.split(' ').collect::<Vec<&str>>();
+
+    if args.len() <= 2 {
+        println!("Usage: rndrg <min> <max>");
+        return;
+    }
+
+    let min = args[0].parse::<u64>().unwrap();
+    let max = args[1].parse::<u64>().unwrap();
+
+    println!("Random number in range ({}, {}): {}", min, max, random::generate_rnd_rng(min, max));
+}
+
 fn rename_device(cmd: &mut String) {
     let args = cmd.split(' ').collect::<Vec<&str>>();
 
@@ -225,6 +247,11 @@ fn print_colored(message: &str, color: Color) {
     change_fg!(color);
     print!("{}", message);
     change_fg!(Color::White);
+}
+
+fn triple_fault_reset(_cmd: &mut String) {
+    println!("Triple fault, resetting...");
+    asm::triple_fault();
 }
 
 fn credits(_cmd: &mut String) {

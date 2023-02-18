@@ -31,6 +31,7 @@ pub mod os_info;
 pub mod application;
 pub mod asm;
 pub mod vga_driver;
+pub mod random;
 
 use core::panic::PanicInfo;
 
