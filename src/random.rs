@@ -1,3 +1,11 @@
+/**************************************************************************************************
+* Name : 								      random.rs
+* Author : 										Avery
+* Date : 									  2/18/2023
+* Purpose :                            Random Number Generator
+* Version : 									 0.1
+**************************************************************************************************/
+
 use vga::colors::Color16;
 
 use crate::{interrupts::get_index, println, change_fg};

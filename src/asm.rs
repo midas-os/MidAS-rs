@@ -24,7 +24,9 @@ pub fn test_asm() {
 
 pub fn triple_fault() {
     unsafe {
-        // load interrupt descriptor table at 0x0
+        /********************************************************************
+        * load interrupt descriptor table at 0xdead, then trigger interrupt 3
+        ********************************************************************/
         asm!(
             "lidt [rax]
             int 3",
