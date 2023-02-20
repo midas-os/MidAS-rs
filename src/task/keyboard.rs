@@ -9,7 +9,8 @@
 use alloc::boxed::Box;
 use conquer_once::spin::{OnceCell};
 use crossbeam_queue::ArrayQueue;
-use crate::{print, println, change_fg, vga_buffer::Color, cmd, application::{self, Application}, vga_driver};
+use crate::{print, println, change_fg, cmd, application::{self, Application}, vga_driver};
+use vga::colors::Color16;
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1, KeyCode};
 use core::{pin::Pin, task::{Poll, Context}};
 use futures_util::{task::AtomicWaker, stream::{Stream, StreamExt}};
@@ -74,9 +75,9 @@ pub(crate) fn add_scancode(scancode: u8) {
             WAKER.wake();
         }
     } else {
-        change_fg!(Color::Yellow);
+        change_fg!(Color16::Yellow);
         println!("WARNING: scancode queue uninitialized");
-        change_fg!(Color::White);
+        change_fg!(Color16::White);
     }
 }
 

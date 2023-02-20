@@ -6,7 +6,8 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use crate::{change_fg, gdt, hlt_loop, println, vga_buffer::Color};
+use crate::{change_fg, gdt, hlt_loop, println};
+use vga::colors::Color16;
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
@@ -71,12 +72,12 @@ extern "x86-interrupt" fn page_fault_handler(
 ) {
     use x86_64::registers::control::Cr2;
 
-    change_fg!(Color::Red);
+    change_fg!(Color16::Red);
     println!("EXCEPTION: PAGE FAULT");
     println!("Accessed Address: {:?}", Cr2::read());
     println!("Error Code: {:?}", error_code);
     println!("{:#?}", stack_frame);
-    change_fg!(Color::White);
+    change_fg!(Color16::White);
     hlt_loop();
 }
 

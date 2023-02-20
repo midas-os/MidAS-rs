@@ -23,7 +23,6 @@ pub mod qemu;
 pub mod serial;
 pub mod gdt;
 pub mod task;
-pub mod vga_buffer;
 pub mod interrupts;
 pub mod memory;
 pub mod cmd;
@@ -32,6 +31,7 @@ pub mod application;
 pub mod asm;
 pub mod vga_driver;
 pub mod random;
+pub mod text;
 
 use core::panic::PanicInfo;
 

@@ -1,4 +1,6 @@
-use crate::{interrupts::get_index};
+use vga::colors::Color16;
+
+use crate::{interrupts::get_index, println, change_fg};
 
 fn get_cycles() -> u64 {
     let mut result: u64 = 0;
@@ -24,6 +26,14 @@ pub fn generate_rnd_01() -> f64 {
 }
 
 pub fn generate_rnd_rng(min: u64, max: u64) -> u64 {
+    if min > max {
+        change_fg!(Color16::Red);
+        println!("Error: min > max");
+        change_fg!(Color16::White);
+
+        return 0;
+    }
+
     let cycles: u64 = get_cycles();
     let index: u64 = get_index();
 

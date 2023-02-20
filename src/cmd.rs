@@ -6,7 +6,8 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use crate::{change_bg, change_fg, print, println, vga_buffer::Color, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}, application::Application, vga_driver, asm, random};
+use crate::{change_bg, change_fg, print, println, clear_screen, os_info::{self, OS_NAME}, task::{self, keyboard}, application::Application, vga_driver, asm, random};
+use vga::colors::Color16;
 use alloc::{vec::Vec, boxed::Box, string::{String, ToString}};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -59,7 +60,7 @@ pub fn add_command(command: Command) {
     COMMANDS.lock().push(command);
 }
 
-pub fn show_intro() {
+pub fn show_intro(is_command: bool) {
     clear_screen!();
 
     /**********************
@@ -76,11 +77,11 @@ ooo        ooooo  o8o        .o8        .o.        .oooooo..o
  8    Y     888   888  888   888   .8'     `888.  oo     .d8P 
 o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'
 
-"#, Color::Yellow);
+"#, Color16::Yellow);
 
     print!("Type ");
 
-    print_colored("\"help\"", Color::LightGreen);
+    print_colored("\"help\"", Color16::LightGreen);
 
     println!(" to see a list of commands");
 
@@ -89,6 +90,10 @@ o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'
         keyboard::INPUT_TARGET = keyboard::InputTarget::Terminal;
     }
 
+    if is_command {
+        return;
+    }
+    
     print!("{}", get_command_prefix());
     
 } 
@@ -110,7 +115,7 @@ pub fn init() {
     add_command(Command::new("rnd", "Generates a random number", generate_rnd));
     add_command(Command::new("rndrg", "Generates a random number in a range", generate_rnd_range));
     
-    show_intro();
+    show_intro(false);
 }
 
 pub fn uninit() {
@@ -171,10 +176,10 @@ pub(crate) fn process_command() {
     }
 
     if !command_found {
-        change_fg!(Color::Red);
+        change_fg!(Color16::Red);
         
         println!("Command \"{}\" not found", args[0]);
-        change_fg!(Color::White);
+        change_fg!(Color16::White);
     }
 
     /******************************
@@ -199,7 +204,7 @@ fn help(_cmd: &mut String) {
 }
 
 fn cmd_show_intro(_cmd: &mut String) {
-    show_intro();
+    show_intro(true);
 }
 
 fn generate_rnd(_cmd: &mut String) {
@@ -243,10 +248,10 @@ fn vga_graphics(_cmd: &mut String) {
     vga_driver::start();
 }
 
-fn print_colored(message: &str, color: Color) {
+fn print_colored(message: &str, color: Color16) {
     change_fg!(color);
     print!("{}", message);
-    change_fg!(Color::White);
+    change_fg!(Color16::White);
 }
 
 fn triple_fault_reset(_cmd: &mut String) {
@@ -260,19 +265,19 @@ fn credits(_cmd: &mut String) {
         for me to even get a basic vga_buffer running.
         - Avery
     ************************************************************************************/
-    print_colored("\nMid", Color::Magenta);
-    print_colored("A", Color::LightCyan);
-    print_colored("S", Color::Yellow);
+    print_colored("\nMid", Color16::Magenta);
+    print_colored("A", Color16::LightCyan);
+    print_colored("S", Color16::Yellow);
 
 
     println!(" was created by:");
-    print_colored("A", Color::Yellow);
-    print_colored("very", Color::LightCyan);
+    print_colored("A", Color16::Yellow);
+    print_colored("very", Color16::LightCyan);
 
     println!(" - @MindlessSea on GitHub");
 
-    print_colored("Mid", Color::Yellow);
-    print_colored("na", Color::Magenta);
+    print_colored("Mid", Color16::Yellow);
+    print_colored("na", Color16::Magenta);
 
     println!(" - @Midnight-Midna on GitHub");
 
@@ -281,7 +286,7 @@ fn credits(_cmd: &mut String) {
     /************
     * RustOS team
     ************/
-    print_colored("The RustOS Team", Color::LightRed);
+    print_colored("The RustOS Team", Color16::LightRed);
 
     println!(" - @rust-osdev on GitHub");
     print!("for Developing RustOS libraries\n\n");
@@ -289,7 +294,7 @@ fn credits(_cmd: &mut String) {
     /******************
     * Phillip Oppermann
     ******************/
-    print_colored("Phillip Oppermann", Color::Blue);
+    print_colored("Phillip Oppermann", Color16::Blue);
 
     println!(" - @phil-opp on GitHub");
     print!("for Developing the blog series \"Writing an OS in Rust\"\n\n");
@@ -297,20 +302,20 @@ fn credits(_cmd: &mut String) {
     /**********
     * Jai/Aenri
     **********/
-    print_colored("Jai/Aenri", Color::Pink);
+    print_colored("Jai/Aenri", Color16::Pink);
 
     println!(" - @jdadonut on GitHub");
     println!("for helping Avery out with fixing bugs");
     print!("(she made an OS called ");
 
-    print_colored("\"veil\"", Color::Magenta);
+    print_colored("\"veil\"", Color16::Magenta);
 
     println!(" go check it out!)\n");
 
     /**********
     * Rust Team
     **********/
-    print_colored("The Rust Team", Color::LightRed);
+    print_colored("The Rust Team", Color16::LightRed);
 
     println!(" - @rust-lang on GitHub");
     println!("for developing Rust\n");
@@ -318,7 +323,7 @@ fn credits(_cmd: &mut String) {
     /*******
     * OSDev 
     *******/
-    print_colored("The OSDev community", Color::LightBlue);
+    print_colored("The OSDev community", Color16::LightBlue);
 
     println!(" - https://wiki.osdev.org");
     print!("for being an awesome way to learn OS Development!\n\n");
@@ -360,8 +365,8 @@ fn echo(cmd: &mut String) {
 }
 
 fn clear(_cmd: &mut String) {
-    change_bg!(Color::Black);
-    change_fg!(Color::White);
+    change_bg!(Color16::Black);
+    change_fg!(Color16::White);
 
     // reset the cursor position
     unsafe {
@@ -376,31 +381,31 @@ fn print_based(_cmd: &mut String) {
     * Based stuff
     * that's the entire command
     **************************/
-    change_fg!(Color::LightCyan);
+    change_fg!(Color16::LightCyan);
     print!("T");
-    change_fg!(Color::Pink);
+    change_fg!(Color16::Pink);
     print!("R");
-    change_fg!(Color::White);
+    change_fg!(Color16::White);
     print!("A");
-    change_fg!(Color::Pink);
+    change_fg!(Color16::Pink);
     print!("N");
-    change_fg!(Color::LightCyan);
+    change_fg!(Color16::LightCyan);
     print!("S");
         
-    change_fg!(Color::White);
+    change_fg!(Color16::White);
     print!(" Rights are ");
 
-    change_fg!(Color::LightCyan);
+    change_fg!(Color16::LightCyan);
     print!("H");
-    change_fg!(Color::Pink);
+    change_fg!(Color16::Pink);
     print!("U");
-    change_fg!(Color::White);
+    change_fg!(Color16::White);
     print!("M");
-    change_fg!(Color::Pink);
+    change_fg!(Color16::Pink);
     print!("A");
-    change_fg!(Color::LightCyan);
+    change_fg!(Color16::LightCyan);
     print!("N");
-    change_fg!(Color::White);
+    change_fg!(Color16::White);
     print!(" Rights");
     println!();
 }
@@ -414,7 +419,7 @@ ooo        ooooo  o8o        .o8        .o.        .oooooo..o
  8  `888'   888   888  888   888    .88ooo8888.        `"Y88b 
  8    Y     888   888  888   888   .8'     `888.  oo     .d8P 
 o8o        o888o o888o `Y8bod88P" o88o     o8888o 8""88888P'  
-"#, Color::Yellow);    
+"#, Color16::Yellow);    
 
     print_colored(r#"
               .oooo.         .o  
@@ -424,7 +429,7 @@ oooo    ooo 888    888      888
   `88..8'   888    888      888  
    `888'    `88b  d88' .o.  888  
     `8'      `Y8bd8P'  Y8P o888o 
-    "#, Color::LightBlue);}
+    "#, Color16::LightBlue);}
 
 pub(crate) fn add_char(key: pc_keyboard::DecodedKey) {
     let mut buffer = unsafe { &mut COMMAND_LINE_BUFFER };

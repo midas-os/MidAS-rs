@@ -12,19 +12,16 @@
 #![test_runner(midas::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-mod vga_buffer;
 mod qemu;
 mod serial;
 mod kernel;
 
-use core::panic::PanicInfo;
-use midas::{memory::{BootInfoFrameAllocator, self}, self, allocator};
+use core::{panic::PanicInfo, fmt::Write};
+use midas::{memory::{BootInfoFrameAllocator, self}, self, allocator, text::WRITER};
+use midas::{println,change_color};
+use vga::colors::Color16;
 use x86_64::{VirtAddr};
 use bootloader::{BootInfo, entry_point};
-
-static OS_NAME: &str = "MidAS";
-static OS_NAME_FULL: &str = "Midna Avery System";
-static VERSION: &str = env!("CARGO_PKG_VERSION"); 
 
 pub trait Testable {
     fn run(&self) -> ();
@@ -90,9 +87,9 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    change_color!(vga_buffer::Color::Red, vga_buffer::Color::Black);
+    change_color!(Color16::Red, Color16::Black);
     println!("{}", info);
-    change_color!(vga_buffer::Color::White, vga_buffer::Color::White);
+    change_color!(Color16::White, Color16::White);
     loop {}
 }
 

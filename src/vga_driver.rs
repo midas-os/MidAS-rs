@@ -195,7 +195,7 @@ pub fn register_key(key: DecodedKey) {
                 text_mode.set_mode();
                 text_mode.clear_screen();
                 
-                cmd::show_intro();
+                cmd::show_intro(false);
         
                 return;
             }
