@@ -6,9 +6,8 @@
 * Version : 									 0.1
 **************************************************************************************************/
 
-use core::arch::asm;
-
-use crate::{change_fg, gdt, hlt_loop, print, println, vga_buffer::Color};
+use crate::{change_fg, gdt, hlt_loop, println};
+use vga::colors::Color16;
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
@@ -18,6 +17,8 @@ pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
 
 pub static PICS: spin::Mutex<ChainedPics> =
     spin::Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
+
+pub static mut INTERRUPT_COUNT: spin::Mutex<u64> = spin::Mutex::new(0);
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
@@ -59,26 +60,37 @@ pub fn init_idt() {
     IDT.load();
 }
 
+pub fn get_index() -> u64 {
+    unsafe {
+        *INTERRUPT_COUNT.lock()
+    }
+}
+
 extern "x86-interrupt" fn page_fault_handler(
     stack_frame: InterruptStackFrame,
     error_code: PageFaultErrorCode,
 ) {
     use x86_64::registers::control::Cr2;
 
-    change_fg!(Color::Red);
+    change_fg!(Color16::Red);
     println!("EXCEPTION: PAGE FAULT");
     println!("Accessed Address: {:?}", Cr2::read());
     println!("Error Code: {:?}", error_code);
     println!("{:#?}", stack_frame);
-    change_fg!(Color::White);
+    change_fg!(Color16::White);
     hlt_loop();
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    /**********
-    * print a dot everytime the timer interrupt fires
-    **********/
     unsafe {
+        /*****************************
+        * Increase the interrupt count
+        *****************************/
+        *INTERRUPT_COUNT.lock() += 1;
+
+        /***********************
+        * Send an EOI to the PIC
+        ***********************/
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
     }

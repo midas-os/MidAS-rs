@@ -15,18 +15,7 @@ use x86_64::{structures::paging::OffsetPageTable, VirtAddr};
 
 pub static OS_NAME: &str = "MidAS";
 pub static OS_NAME_FULL: &str = "Midna Avery System";
-pub static VERSION: &str = env!("CARGO_PKG_VERSION"); 
-
-async fn async_string() -> &'static str {
-    "Hello from async_string()!"
-}
-
-async fn example_task() {
-    let future = async_string();
-    let s = future.await;
-
-    println!("{}", s);
-}
+pub static VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn main(
     _boot_info: &'static BootInfo,

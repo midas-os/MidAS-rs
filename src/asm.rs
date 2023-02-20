@@ -21,3 +21,15 @@ pub fn test_asm() {
 
     assert_eq!(result, 20, "Assembly test failed! Expected: 20, Result: {}", result);
 }
+
+pub fn triple_fault() {
+    unsafe {
+        /********************************************************************
+        * load interrupt descriptor table at 0xdead, then trigger interrupt 3
+        ********************************************************************/
+        asm!(
+            "lidt [rax]
+            int 3",
+        in("rax") 0xdead);
+    }
+}
