@@ -8,11 +8,12 @@
 
 
 use alloc::{string::ToString, format, vec::Vec};
-use midas_vga::graphics::{draw_shape, write_str_centered_x, to_usize};
+use midas_vga::graphics::{draw_shape, write_str_centered_x, to_usize, write_str_centered, draw_shape_filled};
 use midas_vga::shapes::*;
-use midas_vga::math::calculate_centered_rect;
+use midas_vga::math::{calculate_centered_rect, calculate_rect_end_point};
 use pc_keyboard::{DecodedKey, KeyCode};
 use spin::Mutex;
+use vga::writers::Graphics320x240x256;
 use vga::{colors::{Color16}, writers::{Graphics640x480x16, GraphicsWriter, Text80x25, TextWriter}, drawing::Point};
 use lazy_static::lazy_static;
 
@@ -64,21 +65,39 @@ pub fn add_page(page: Page) {
 }
 
 fn main_page() {
-    let box_size = (550, 300);
-    let box_start = calculate_centered_rect(box_size);
-    let box_end = (box_start.0 + box_size.0, box_start.1 + box_size.1);
+    // let box_size = (300, 200);
+    // let box_start = calculate_centered_rect(box_size);
+    // let box_end = (box_start.0 + box_size.0, box_start.1 + box_size.1);
 
-    let box_start_u = to_usize(box_start);
-    let box_end_u = to_usize(box_end);
+    // let box_start_u = to_usize(box_start);
+    // let box_end_u = to_usize(box_end);
+
+    let mode = Graphics320x240x256::new();
+    mode.set_mode();
+
+    // let rect = Shape::rectangle(box_start, box_end);
+    // draw_shape(&rect, 0xFF);
+
+    // write_str_centered_x(box_start_u, box_end_u, 30, "MidAS", 0xFF);
+    // write_str_centered_x(box_start_u, box_end_u, 50, "GUI Version 0.1", 0xFF);
+    // write_str_centered_x(box_start_u, box_end_u, 70, "Current Resolution:", 0xFF);
+    // write_str_centered_x(box_start_u, box_end_u, 90, "320x240", 0x3);
+
+    // draw a grid of 10x10 squares
+    for x in 0..32 {
+        for y in 0..24 {
+            let rect = Shape::rectangle((x * 10, y * 10), ((x + 1) * 10, (y + 1) * 10));
+            draw_shape(&rect, 0xC);
+        }
+    }
+
+    // create backdrop for text
+    let box_size = (10*8+10, 8+10);
+    let box_start = calculate_centered_rect(box_size);
+    let box_end = calculate_rect_end_point(box_start, box_size);
 
     let rect = Shape::rectangle(box_start, box_end);
-    draw_shape(&rect, Color16::White);
-
-    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "MidAS Graphical User Interface (GUI)", Color16::White);
-
-    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 20, "Use the Left and Right Arrow keys to change the background color", Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 40, "Use the Up and Down Arrow keys to change the current page", Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 60, "Press X to exit to text", Color16::White);
+    draw_shape_filled(&rect, 0x0);
 }
 
 fn device_info_page() {
@@ -90,9 +109,9 @@ fn device_info_page() {
     let box_end_u = to_usize(box_end);
 
     let rect = Shape::rectangle(box_start, box_end);
-    draw_shape(&rect, Color16::White);
+    draw_shape(&rect, 0xFF);
 
-    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "Device Information", Color16::White);
+    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 20, "Device Information", 0xFF);
 
     let device_name = format!("Device Name: {}", cmd::DEVICE_NAME.lock().as_str());
     let architecture = format!("Architecture: x86_64");
@@ -101,15 +120,15 @@ fn device_info_page() {
     let kernel_version = format!("Kernel Version: {}", os_info::KERNEL_VERSION);
     let gui_version = format!("GUI Version: {}", os_info::GUI_VERSION);
 
-    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 60, device_name.as_str(), Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 80, architecture.as_str(), Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 100, os_version.as_str(), Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 120, kernel_version.as_str(), Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 140, gui_version.as_str(), Color16::White);
+    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 60, device_name.as_str(), 0xFF);
+    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 80, architecture.as_str(), 0xFF);
+    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 100, os_version.as_str(), 0xFF);
+    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 120, kernel_version.as_str(), 0xFF);
+    write_str_centered_x(box_start_u, box_end_u, box_start_u.1 + 140, gui_version.as_str(), 0xFF);
 
-    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 20, "Use the Left and Right Arrow keys to change the background color", Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 40, "Use the Up and Down Arrow keys to change the current page", Color16::White);
-    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 60, "Press X to exit to text", Color16::White);
+    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 20, "Use the Left and Right Arrow keys to change the background color", 0xFF);
+    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 40, "Use the Up and Down Arrow keys to change the current page", 0xFF);
+    write_str_centered_x(box_start_u, box_end_u, box_end_u.1 - 60, "Press X to exit to text", 0xFF);
 }
 
 pub unsafe fn init() {

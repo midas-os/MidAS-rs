@@ -22,6 +22,9 @@ use midas::{println,change_color};
 use vga::colors::Color16;
 use x86_64::{VirtAddr};
 use bootloader::{BootInfo, entry_point};
+use limine::LimineBootInfoRequest;
+
+static BOOTLOADER_INFO: LimineBootInfoRequest = LimineBootInfoRequest::new(0);
 
 pub trait Testable {
     fn run(&self) -> ();
@@ -55,29 +58,44 @@ fn _start_tests() {
     qemu::exit_qemu(qemu::QemuExitCode::Success);
 }
 
-entry_point!(kernel_main);
+// #[no_mangle]
+// fn kernel_main(boot_info: &'static BootInfo) -> ! {
+//     midas::init();
+
+//     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+//     let mut mapper = unsafe {
+//         memory::init(phys_mem_offset)
+//     };
+//     let mut frame_allocator = unsafe {
+//         BootInfoFrameAllocator::init(&boot_info.memory_map)
+//     };
+
+//     allocator::init_heap(&mut mapper, &mut frame_allocator)
+//         .expect("heap initialization failed");
+
+//     #[cfg(test)]
+//     test_main();
+
+//     kernel::main(boot_info, &mut mapper, &mut frame_allocator, phys_mem_offset);
+
+//     midas::hlt_loop()
+// }
 
 #[no_mangle]
-fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    midas::init();
+pub extern "C" fn _start() -> ! {
+    println!("hello, world!");
 
-    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe {
-        memory::init(phys_mem_offset)
-    };
-    let mut frame_allocator = unsafe {
-        BootInfoFrameAllocator::init(&boot_info.memory_map)
-    };
+    if let Some(bootinfo) = BOOTLOADER_INFO.get_response().get() {
+        println!(
+            "booted by {} v{}",
+            bootinfo.name.to_str().unwrap().to_str().unwrap(),
+            bootinfo.version.to_str().unwrap().to_str().unwrap(),
+        );
+    }
 
-    allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
-
-    #[cfg(test)]
-    test_main();
-
-    kernel::main(boot_info, &mut mapper, &mut frame_allocator, phys_mem_offset);
-
-    midas::hlt_loop()
+    loop {
+        core::hint::spin_loop();
+    }
 }
 
 /****************************************

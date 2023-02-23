@@ -16,6 +16,7 @@ pc-keyboard = "0.5.0"
 linked_list_allocator = "0.10.2"
 vga = "0.2.7"
 midas_vga = "0.1.5"
+limine = "0.1.10"
 
 [dependencies.lazy_static]
 version = "1.0"
